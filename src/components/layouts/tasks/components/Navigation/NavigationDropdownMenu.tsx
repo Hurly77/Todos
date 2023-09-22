@@ -14,7 +14,6 @@ import { useTheme } from "next-themes";
 export default function NavigationDropdownMenu() {
   const { theme, setTheme } = useTheme();
 
-  console.log(theme);
   return (
     <Dropdown showArrow radius="sm">
       <DropdownTrigger>

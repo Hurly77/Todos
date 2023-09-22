@@ -1,9 +1,10 @@
 import { ArrowPathRoundedSquareIcon } from "@heroicons/react/24/outline";
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownSection, DropdownItem } from "@nextui-org/react";
 import { REPEAT_DROPDOWN_OPTIONS } from "../../constants/task-dates-options";
+import DateChip from "./DateChip";
 
 export default function RepeatDropdown({ taskStates }: { taskStates: UseStateProps<Task> }) {
-  const [, setCurrentTask] = taskStates;
+  const [currentTask, setCurrentTask] = taskStates;
 
   function handleOnClick(option: (typeof REPEAT_DROPDOWN_OPTIONS)[0]) {
     setCurrentTask((prevTask) => {
@@ -15,7 +16,11 @@ export default function RepeatDropdown({ taskStates }: { taskStates: UseStatePro
     <Dropdown radius="sm">
       <DropdownTrigger>
         <button>
-          <ArrowPathRoundedSquareIcon className="h-5 w-5 " />
+          {!currentTask?.repeat ? (
+            <ArrowPathRoundedSquareIcon className="h-5 w-5 " />
+          ) : (
+            <DateChip date={currentTask.repeat} icon="repeat" />
+          )}
         </button>
       </DropdownTrigger>
       <DropdownMenu aria-label="Due Date" disabledKeys={["Title"]}>

@@ -1,15 +1,16 @@
 import { Button, Input, Checkbox } from "@nextui-org/react";
 import { motion, AnimatePresence } from "framer-motion";
-import { PlusIcon, BellIcon, CalendarDaysIcon, ArrowPathRoundedSquareIcon } from "@heroicons/react/24/outline";
+import { PlusIcon } from "@heroicons/react/24/outline";
 import React from "react";
-import { Task, TasksLayoutContext } from "../../context/TasksLayoutContext";
+import { TasksLayoutContext } from "../../context/TasksLayoutContext";
 
 import TaskTileBottomFormOptions from "./TaskTileBottomFormOptions";
 import { uuidv4 } from "../../helpers/task-helpers";
-import ReactDatePicker from "react-datepicker";
+import DatePicker from "react-datepicker";
+
+import "react-datepicker/dist/react-datepicker.css";
 
 function BottomForm({ show, buttonDisabled }: { show: boolean; buttonDisabled: boolean }) {
-  const [date, setDate] = React.useState<Date | null>(null);
   return (
     <AnimatePresence>
       {show && (
@@ -18,7 +19,7 @@ function BottomForm({ show, buttonDisabled }: { show: boolean; buttonDisabled: b
           initial={{ zIndex: 0, height: 0, y: -40 }}
           animate={{ height: 50, y: -1 }}
           exit={{ height: 0, y: -40 }}
-          className="flex z-10 h-16 overflow-hidden items-end justify-between space-x-4 bg-default-200 w-full"
+          className="flex z-10 h-16 overflow-hidden items-end justify-between space-x-4 bg-default-50 w-full"
         >
           <TaskTileBottomFormOptions />
           <div className="p-2">
@@ -26,12 +27,6 @@ function BottomForm({ show, buttonDisabled }: { show: boolean; buttonDisabled: b
               Add
             </Button>
           </div>
-          <ReactDatePicker
-            onChange={(date) => {
-              console.log("Date: ", date);
-            }}
-            selected={date}
-          />
         </motion.div>
       )}
     </AnimatePresence>
@@ -45,14 +40,15 @@ export default function TaskTileForm() {
   const [isFocused, setIsFocused] = ctx.taskFormFocusedState;
 
   const [currentTask, setCurrentTask] = ctx.currentTaskStates;
+  const [datePickerOpen] = ctx.datePickerStates;
 
   const divRef = React.useRef<HTMLFormElement>(null);
 
-  console.log("currentTask", currentTask);
-
   React.useEffect(() => {
     const listener = (e: MouseEvent) => {
-      if (!divRef.current?.contains(e.target as Node) && !currentTask.title) {
+      const all = Object.values(currentTask).every((value) => value === null || value === "");
+      console.log(all);
+      if (!divRef.current?.contains(e.target as Node) && all && !datePickerOpen) {
         setIsFocused(false);
       }
     };
@@ -63,7 +59,7 @@ export default function TaskTileForm() {
     }
 
     return () => document.body.removeEventListener("click", listener, false);
-  }, [currentTask.title, setIsFocused]);
+  }, [currentTask, currentTask.title, datePickerOpen, setIsFocused]);
 
   function handleSubmitTask(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -73,11 +69,15 @@ export default function TaskTileForm() {
   }
 
   return (
-    <form ref={divRef} onSubmit={handleSubmitTask} className="p-0">
-      <div className="z-50 relative border bg-white dark:bg-default  p-2 rounded flex items-center shadow-sm">
+    <form
+      ref={divRef}
+      onSubmit={handleSubmitTask}
+      className="p-0 bg-default-50 shadow-[0px_0.3px_0.9px_rgba(0,0,0,0.1),0px_1.6px_3.6px_rgba(0,0,0,0.1)] rounded"
+    >
+      <div className="z-40 relative border-b bg-white dark:bg-default-50  p-2 rounded flex items-center rounded-b-none border-default">
         <div>
           {isFocused ? (
-            <Checkbox isDisabled isReadOnly radius="full" color="primary" />
+            <Checkbox isReadOnly radius="full" color="primary" />
           ) : (
             <PlusIcon className="h-7 w-7 stroke-primary" />
           )}

@@ -8,6 +8,7 @@ export type TasksLayoutContextProps = {
   taskListState: UseStateProps<Task[]>;
   taskFormFocusedState: UseStateProps<boolean>;
   currentTaskStates: UseStateProps<Task>;
+  datePickerStates: UseStateProps<string | null>;
 };
 
 export type TasksLayoutContextProviderProps = {
@@ -28,9 +29,10 @@ export const TasksLayoutContext = React.createContext({} as TasksLayoutContextPr
 export default function TasksLayoutContextProvider({ children }: TasksLayoutContextProviderProps) {
   const [sidebarOpen, setSidebarOpen] = React.useState(true);
   const [taskList, setTaskList] = React.useState([] as Task[]);
-  const [taskFormFocused, setTaskFormFocused] = React.useState(false);
+  const [taskFormFocused, setTaskFormFocused] = React.useState(true);
+  const [calendarOpen, setCalendarOpen] = React.useState(null);
   const [currentTask, setCurrentTask] = React.useState({
-    id: uuidv4(),
+    id: "",
     title: "",
     date: null,
     completed: false,
@@ -38,13 +40,12 @@ export default function TasksLayoutContextProvider({ children }: TasksLayoutCont
     repeat: null,
   } as Task);
 
-  console.log("taskList", taskList.length);
-
   const value = {
     taskListState: [taskList, setTaskList] as UseStateProps<Task[]>,
     sidebarState: [sidebarOpen, setSidebarOpen] as UseStateProps<boolean>,
     taskFormFocusedState: [taskFormFocused, setTaskFormFocused] as UseStateProps<boolean>,
     currentTaskStates: [currentTask, setCurrentTask] as UseStateProps<Task>,
+    datePickerStates: [calendarOpen, setCalendarOpen] as UseStateProps<string | null>,
   };
 
   return <TasksLayoutContext.Provider value={value}>{children}</TasksLayoutContext.Provider>;
