@@ -2,12 +2,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import React from "react";
 import { TasksLayoutContext } from "../../context/TasksLayoutContext";
 import { tasksNavigationSidebarLinks } from "../../constants/navbar-data.constants";
-import { Listbox, ListboxItem, useTable } from "@nextui-org/react";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { useTheme } from "next-themes";
-
-const classNames = (...classes: string[]) => classes.filter(Boolean).join(" ");
+import { classNames } from "@/app/helpers/twind-helper";
 
 export default function Sidebar() {
   const router = useRouter();

@@ -41,9 +41,57 @@ export const REMINDER_DROPDOWN_OPTIONS = [
   { key: "next-week", name: "Next Week", value: new Date(NEXT_WEEK) },
 ];
 
-export const REPEAT_DROPDOWN_OPTIONS = [
-  { key: "daily", name: "Daily", value: DAILY_MILLISECONDS },
-  { key: "weekly", name: "Weekly", value: WEEKLY_MILLISECONDS },
-  { key: "monthly", name: "Monthly", value: MONTHLY_MILLISECONDS },
-  { key: "yearly", name: "Yearly", value: YEARLY_MILLISECONDS },
+export const REPEAT_DROPDOWN_OPTIONS: { key: string; name: string; value: Task["repeat"] }[] = [
+  {
+    key: "daily",
+    name: "Daily",
+    value: {
+      interval: 1,
+      days: null,
+      type: "days",
+    },
+  },
+  {
+    key: "weekly",
+    name: "Weekly",
+    value: {
+      interval: 1,
+      days: null,
+      type: "weeks",
+    },
+  },
+  {
+    key: "monthly",
+    name: "Monthly",
+    value: {
+      interval: 1,
+      days: null,
+      type: "months",
+    },
+  },
+  {
+    key: "yearly",
+    name: "Yearly",
+    value: {
+      interval: 1,
+      days: null,
+      type: "years",
+    },
+  },
 ];
+
+export const DAYS_OF_WEEK_ABBREVIATED_TWO_LETTERS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+export const DAYS_OF_WEEK = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+export const REPEAT_TIME_CATEGORY_OPTIONS: { key: "days" | "weeks" | "months" | "years"; name: string }[] = [
+  { key: "days", name: "days" },
+  { key: "weeks", name: "weeks" },
+  { key: "months", name: "months" },
+  { key: "years", name: "years" },
+];
+
+export const REPEAT_TYPE_ADVERBS_MAP: Record<string, string> = {
+  days: "daily",
+  weeks: "weekly",
+  months: "monthly",
+  years: "yearly",
+};

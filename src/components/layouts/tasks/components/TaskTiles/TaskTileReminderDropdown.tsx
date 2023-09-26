@@ -16,10 +16,10 @@ import {
 import { ABBREVIATED_DAYS, REMINDER_DROPDOWN_OPTIONS } from "../../constants/task-dates-options";
 import { TasksLayoutContext } from "../../context/TasksLayoutContext";
 import React from "react";
-import ReactDatePicker from "react-datepicker";
-import DateChip from "./DateChip";
+import ReactDatePicker, { ReactDatePickerCustomHeaderProps, ReactDatePickerProps } from "react-datepicker";
+import DateChip from "./TaskTilesDateChip";
 
-export default function ReminderDropdown({ taskStates }: { taskStates: UseStateProps<Task> }) {
+export default function ReminderDropdown() {
   const ctx = React.useContext(TasksLayoutContext);
   const [currentTask, setCurrentTask] = ctx.currentTaskStates;
   const [datePickerOpen, setDatePickerOpen] = ctx.datePickerStates;
@@ -34,7 +34,32 @@ export default function ReminderDropdown({ taskStates }: { taskStates: UseStateP
     return <DateChip date={currentTask.reminder} icon="bell" />;
   };
 
-  console.log(datePickerOpen);
+  const CustomInput = React.forwardRef<HTMLInputElement, { onChange: (value: any) => void; date: Date; value: string }>(
+    ({ date, value, onChange }, ref) => (
+      <Input
+        ref={ref}
+        radius="sm"
+        color="default"
+        variant="bordered"
+        className="cursor-pointer"
+        fullWidth
+        style={{ width: "100%" }}
+        onClick={(e) => e.currentTarget?.showPicker()}
+        value={value}
+        onChange={(e) => {
+          console.log(date);
+          onChange(e.target.value);
+        }}
+        type="time"
+        classNames={{
+          base: "cursor-pointer",
+          input: "cursor-pointer",
+          inputWrapper: "bg-white hover:bg-white w-full cursor-pointer",
+        }}
+      />
+    )
+  );
+  CustomInput.displayName = "CustomInput";
 
   return (
     <>
@@ -100,7 +125,8 @@ export default function ReminderDropdown({ taskStates }: { taskStates: UseStateP
               showTimeInput
               onSelect={(date) => setCurrentTask((prevTask) => ({ ...prevTask, reminder: date as Date }))}
               selected={currentTask?.reminder || new Date()}
-              customTimeInput={<Input fullWidth style={{ width: "100%" }} type="time" className="w-full" />}
+              // Ignore the date, onChange and value
+              customTimeInput={<CustomInput date={currentTask.date || new Date()} onChange={() => null} value={""} />}
             />
             <div className="w-full  px-4">
               <Button onClick={() => setDatePickerOpen(null)} radius="sm" fullWidth color="primary">

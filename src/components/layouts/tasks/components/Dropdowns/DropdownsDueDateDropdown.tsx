@@ -15,17 +15,19 @@ import { DUE_DATE_DROPDOWN_OPTIONS } from "../../constants/task-dates-options";
 import DatePicker from "react-datepicker";
 import React from "react";
 import { TasksLayoutContext } from "../../context/TasksLayoutContext";
-import DateChip from "./TaskTilesDateChip";
+import DropdownsTriggerDisplay from "./DropdownsTriggerDisplay";
+import DropdownsDatePickerPopover from "./DropdownsDatePickerPopover";
 
-export default function DueDateDropdown() {
+export default function DropdownsDueDateDropdown(props: TaskSpecificDropdownsProps) {
+  const { placeholder, hasChip, setTask, task, datePickerOpen, setDatePickerOpen } = props;
   const ctx = React.useContext(TasksLayoutContext);
-  const [currentTask, setCurrentTask] = ctx.currentTaskStates;
-  const [datePickerOpen, setDatePickerOpen] = ctx.datePickerStates;
 
   function handleOnClick(option: (typeof DUE_DATE_DROPDOWN_OPTIONS)[0]) {
-    setCurrentTask((prevTask) => {
-      return { ...prevTask, date: option.value };
-    });
+    if (task)
+      setTask({
+        ...task,
+        date: option.value,
+      });
   }
 
   return (
@@ -34,7 +36,7 @@ export default function DueDateDropdown() {
         <Dropdown radius="sm">
           <DropdownTrigger>
             <button>
-              {currentTask?.date ? <DateChip date={currentTask.date} /> : <CalendarDaysIcon className="h-5 w-5" />}
+              <DropdownsTriggerDisplay {...{ hasChip, placeholder }} icon="calendar" date={task?.date || null} />
             </button>
           </DropdownTrigger>
           <DropdownMenu aria-label="Due Date" disabledKeys={["Title"]}>
@@ -70,36 +72,21 @@ export default function DueDateDropdown() {
         >
           <PopoverTrigger>
             <button>
-              <DateChip date={currentTask.date} />
+              <DropdownsTriggerDisplay hasChip icon="calendar" date={task?.date || null} />
             </button>
           </PopoverTrigger>
           <PopoverContent>
-            <DatePicker
-              calendarClassName="calendar"
-              calendarContainer={({ children, className }) => {
-                return (
-                  <div
-                    className={className}
-                    style={{
-                      border: "none",
-                    }}
-                  >
-                    {children}
-                  </div>
-                );
+            <DropdownsDatePickerPopover
+              date={task?.date || null}
+              onSave={() => setDatePickerOpen(null)}
+              handleChange={(date) => {
+                if (task)
+                  setTask({
+                    ...task,
+                    date: date as Date,
+                  });
               }}
-              onSelect={(date) => setCurrentTask((prevTask) => ({ ...prevTask, date: date as Date }))}
-              onChange={(date) => {
-                setCurrentTask((prevTask) => ({ ...prevTask, date: date as Date }));
-              }}
-              selected={currentTask?.date || new Date()}
-              inline
             />
-            <div className="px-4 w-full">
-              <Button onClick={() => setDatePickerOpen(null)} fullWidth color="primary" radius="sm">
-                Save
-              </Button>
-            </div>
           </PopoverContent>
         </Popover>
       )}
