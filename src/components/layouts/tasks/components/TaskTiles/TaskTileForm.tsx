@@ -9,8 +9,9 @@ import { uuidv4 } from "../../helpers/task-helpers";
 import { supabase } from "@/lib/sdk/utilities/supabase";
 import taskCreator from "@/lib/sdk/creators/taskCreator";
 import { classNames } from "@/components/layouts/app/helpers/twind-helper";
+import { TaskFetcherKeys } from "@/lib/sdk/constants/global-enums.";
 
-export default function TaskTileForm({ type }: { type?: "my_day" }) {
+export default function TaskTileForm({ type }: { type?: TaskFetcherKeys }) {
   const ctx = React.useContext(TasksLayoutContext);
 
   const [taskList, setTaskList] = ctx.taskListState;

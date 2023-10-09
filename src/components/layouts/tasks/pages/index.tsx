@@ -1,6 +1,7 @@
 import { SunIcon } from "@heroicons/react/24/outline";
 import TaskTileForm from "../components/TaskTiles/TaskTileForm";
 import TaskTileList from "../components/TaskTiles/TaskTileList";
+import { TaskFetcherKeys } from "@/lib/sdk/constants/global-enums.";
 
 export default function TodayTaskPage() {
   return (
@@ -11,9 +12,9 @@ export default function TodayTaskPage() {
       </h1>
       <span className="text-foreground-600 font-light text-xs">{new Date().toDateString()}</span>
       <div className="pt-10 pb-2">
-        <TaskTileForm type="my_day" />
+        <TaskTileForm type={TaskFetcherKeys.MY_DAY} />
       </div>
-      <TaskTileList />
+      <TaskTileList type={TaskFetcherKeys.MY_DAY} />
     </div>
   );
 }

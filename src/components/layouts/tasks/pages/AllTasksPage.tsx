@@ -1,11 +1,7 @@
+import { TaskFetcherKeys } from "@/lib/sdk/constants/global-enums.";
 import TaskTileForm from "../components/TaskTiles/TaskTileForm";
+import TaskTypePage from "../components/Pages/TaskTypePage";
 
 export default function AllTasksPage() {
-  return (
-    <div className="p-6 bg-default-100 grow">
-      <h1>All Tasks Page</h1>
-
-      <TaskTileForm />
-    </div>
-  );
+  return <TaskTypePage type={TaskFetcherKeys?.ALL} />;
 }

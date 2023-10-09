@@ -8,6 +8,7 @@ import { classNames } from "@/app/helpers/twind-helper";
 import { supabase } from "@/lib/sdk/utilities/supabase";
 import useTaskList from "../../hooks/useTaskList";
 import { TaskFormat, TaskRow } from "@/lib/sdk/models/TaskModel";
+import { TaskFetcherKeys } from "@/lib/sdk/constants/global-enums.";
 
 type TaskListProps = {
   tasks: TaskFormat[];
@@ -84,10 +85,10 @@ function TaskTileList({ tasks, setTasks }: TaskListProps) {
   );
 }
 
-export default function TaskTiles() {
+export default function TaskTiles({ type }: { type: TaskFetcherKeys }) {
   const { taskInEdit, setTaskInEdit } = React.useContext(TasksLayoutContext);
 
-  const { taskList, setTaskList } = useTaskList();
+  const { taskList, setTaskList } = useTaskList(type);
 
   const incompleteTasks = taskList?.filter((task) => !task.completed);
   const completedTasks = taskList?.filter((task) => task.completed);

@@ -8,11 +8,14 @@ import {
   Switch,
   User,
 } from "@nextui-org/react";
-import { Cog6ToothIcon, ListBulletIcon } from "@heroicons/react/24/outline";
+import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 import { useTheme } from "next-themes";
+import { supabase } from "@/lib/sdk/utilities/supabase";
+import { useRouter } from "next/router";
 
 export default function NavigationDropdownMenu() {
   const { theme, setTheme } = useTheme();
+  const router = useRouter();
 
   return (
     <Dropdown showArrow radius="sm">
@@ -43,7 +46,15 @@ export default function NavigationDropdownMenu() {
 
         <DropdownSection aria-label="Help & Feedback">
           <DropdownItem key="help_and_feedback">Help & Feedback</DropdownItem>
-          <DropdownItem key="logout">Log Out</DropdownItem>
+          <DropdownItem
+            onClick={() => {
+              supabase.auth.signOut();
+              router.push("/login");
+            }}
+            key="logout"
+          >
+            Log Out
+          </DropdownItem>
         </DropdownSection>
       </DropdownMenu>
     </Dropdown>

@@ -8,19 +8,19 @@ import React from "react";
 type UseTaskListData = Awaited<ReturnType<typeof getCurrentUserTasks>>;
 type UTaskListCallback = (payload: RealtimePostgresChangesPayload<TaskFormat>) => void;
 
-export default function useTaskList() {
+export default function useTaskList(type?: TaskFetcherKeys) {
   const [dataFetched, setDataFetched] = React.useState(false);
   const [taskList, setTaskList] = React.useState([] as UseTaskListData);
 
   React.useEffect(() => {
     async function fetchTasks() {
       setDataFetched(true);
-      const data = await getCurrentUserTasks(TaskFetcherKeys.ALL);
+      const data = await getCurrentUserTasks(type ?? TaskFetcherKeys.ALL);
       if (data) setTaskList(data);
     }
 
     if (!dataFetched) fetchTasks();
-  }, [dataFetched]);
+  }, [dataFetched, type]);
 
   React.useEffect(() => {
     const taskChannel = supabase

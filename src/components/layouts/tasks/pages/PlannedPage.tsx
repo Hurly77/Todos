@@ -1,7 +1,6 @@
+import { TaskFetcherKeys } from "@/lib/sdk/constants/global-enums.";
+import TaskTypePage from "../components/Pages/TaskTypePage";
+
 export default function PlannedPage() {
-  return (
-    <div className="p-6 bg-default-100 grow">
-      <h1>Planned</h1>
-    </div>
-  );
+  return <TaskTypePage type={TaskFetcherKeys?.PLANNED} />;
 }
