@@ -47,7 +47,6 @@ export default function ReminderDropdown() {
         onClick={(e) => e.currentTarget?.showPicker()}
         value={value}
         onChange={(e) => {
-          console.log(date);
           onChange(e.target.value);
         }}
         type="time"

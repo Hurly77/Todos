@@ -1,4 +1,3 @@
-import { ArrowPathRoundedSquareIcon } from "@heroicons/react/24/outline";
 import {
   Dropdown,
   DropdownTrigger,
@@ -8,36 +7,46 @@ import {
   PopoverTrigger,
   PopoverContent,
   Popover,
-  Input,
-  Select,
-  SelectItem,
-  Button,
-  ButtonGroup,
 } from "@nextui-org/react";
-import {
-  DAYS_OF_WEEK_ABBREVIATED_TWO_LETTERS,
-  REPEAT_DROPDOWN_OPTIONS,
-  REPEAT_TIME_CATEGORY_OPTIONS,
-} from "../../constants/task-dates-options";
+import { REPEAT_DROPDOWN_OPTIONS } from "../../constants/task-dates-options";
 
 import { TasksLayoutContext } from "../../context/TasksLayoutContext";
 import React from "react";
 import DropdownsTriggerDisplay from "./DropdownsTriggerDisplay";
 import DropdownsRepeatPopover from "./DropdownsRepeatPopover";
+import { TaskFormat } from "@/lib/sdk/models";
 
-export default function DropdownsRepeatDropdown(props: TaskSpecificDropdownsProps) {
+import createTaskRepeat from "@/lib/sdk/methods/create-task-repeat";
+import updateTaskRepeat from "@/lib/sdk/methods/update-task-repeat";
+
+export default function DropdownsRepeatDropdown(props: TaskSpecificDropdownsProps<TaskFormat>) {
   const { placeholder, hasChip, setTask, task, datePickerOpen, setDatePickerOpen } = props;
-  const { datePickerStates } = React.useContext(TasksLayoutContext);
+  const { taskEditorOpen } = React.useContext(TasksLayoutContext);
 
   function handleOnClick(option: (typeof REPEAT_DROPDOWN_OPTIONS)[0]) {
-    if (task) setTask({ ...task, repeat: option.value });
+    if (task) setTask({ ...task, repeat: option.value as TaskFormat["repeat"] });
+
+    if (taskEditorOpen && task?.repeat_id) {
+      updateTaskRepeat({
+        ...option?.value,
+        id: task?.repeat_id,
+        indefinite: true,
+        task_id: task?.id,
+      });
+    } else if (taskEditorOpen && !task?.repeat_id && task?.id) {
+      createTaskRepeat({
+        ...option?.value,
+        indefinite: true,
+        task_id: task?.id,
+      });
+    }
   }
 
   return (
     <>
       {datePickerOpen !== "repeat" ? (
         <Dropdown radius="sm">
-          <DropdownTrigger onClick={() => console.log("clicked repeat")}>
+          <DropdownTrigger>
             <button>
               <DropdownsTriggerDisplay
                 placeholder={placeholder}
@@ -49,14 +58,14 @@ export default function DropdownsRepeatDropdown(props: TaskSpecificDropdownsProp
           </DropdownTrigger>
           <DropdownMenu aria-label="Due Date" disabledKeys={["Title"]}>
             <DropdownSection showDivider>
-              <DropdownItem isReadOnly key="Title" className="opacity-100 hover:cursor-pointer">
+              <DropdownItem textValue="Repeat" isReadOnly key="Title" className="opacity-100 hover:cursor-pointer">
                 <h1 className="font-bold text-center">Repeat</h1>
               </DropdownItem>
             </DropdownSection>
 
             <DropdownSection showDivider>
               {REPEAT_DROPDOWN_OPTIONS.map((option) => (
-                <DropdownItem onClick={() => handleOnClick(option)} key={option.key}>
+                <DropdownItem textValue={option?.name} onClick={() => handleOnClick(option)} key={option.key}>
                   {option.name}
                 </DropdownItem>
               ))}
@@ -82,8 +91,26 @@ export default function DropdownsRepeatDropdown(props: TaskSpecificDropdownsProp
                 if (task)
                   setTask({
                     ...task,
-                    repeat: { interval, type, days },
+                    repeat: { interval, type, days } as TaskFormat["repeat"],
                   });
+                if (taskEditorOpen && task?.repeat_id) {
+                  updateTaskRepeat({
+                    id: task?.repeat_id,
+                    type,
+                    days,
+                    interval,
+                    indefinite: true,
+                    task_id: task?.id,
+                  });
+                } else if (taskEditorOpen && !task?.repeat_id && task?.id) {
+                  createTaskRepeat({
+                    type,
+                    days,
+                    interval,
+                    indefinite: true,
+                    task_id: task?.id,
+                  });
+                }
               }}
             />
           </PopoverContent>

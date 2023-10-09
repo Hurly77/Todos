@@ -19,11 +19,11 @@ export default function TaskEditorDropdowns() {
 
   return (
     <div className="p-4 w-full dark:bg-default-100 bg-white space-y-4 text-sm rounded-sm">
-      <DropdownsReminderDropdown placeholder="Add reminder" {...sharedProps} hasChip={false} />
+      <DropdownsReminderDropdown placeholder="Remind me" {...sharedProps} hasChip={false} />
       <Divider />
       <DropdownsDueDateDropdown placeholder="Add due date" {...sharedProps} hasChip={false} />
       <Divider />
-      <DropdownsRepeatDropdown placeholder="Add due date" {...sharedProps} hasChip={false} />
+      <DropdownsRepeatDropdown placeholder="Repeat" {...sharedProps} hasChip={false} />
     </div>
   );
 }

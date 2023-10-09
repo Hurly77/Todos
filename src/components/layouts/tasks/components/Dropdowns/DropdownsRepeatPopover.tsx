@@ -22,7 +22,13 @@ export default function DropdownsRepeatPopover({ onSave }: DropdownsRepeatPopove
           onChange={(e) => setNumberOfRepeats(parseInt(e.target.value))}
           value={numberOfRepeats?.toString()}
         />
-        <Select defaultSelectedKeys={["days"]} radius="sm" size="sm" labelPlacement="outside">
+        <Select
+          aria-label="Task Repeat Select Options"
+          defaultSelectedKeys={["days"]}
+          radius="sm"
+          size="sm"
+          labelPlacement="outside"
+        >
           {REPEAT_TIME_CATEGORY_OPTIONS.map((option) => (
             <SelectItem key={option.key} onClick={() => setTimeCategory(option.key)}>
               {option.name}

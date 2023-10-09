@@ -6,8 +6,11 @@ import { TasksLayoutContext } from "../../context/TasksLayoutContext";
 import "react-datepicker/dist/react-datepicker.css";
 import TaskTileFormBottom from "./TaskTileFormBottom";
 import { uuidv4 } from "../../helpers/task-helpers";
+import { supabase } from "@/lib/sdk/utilities/supabase";
+import taskCreator from "@/lib/sdk/creators/taskCreator";
+import { classNames } from "@/components/layouts/app/helpers/twind-helper";
 
-export default function TaskTileForm() {
+export default function TaskTileForm({ type }: { type?: "my_day" }) {
   const ctx = React.useContext(TasksLayoutContext);
 
   const [taskList, setTaskList] = ctx.taskListState;
@@ -34,21 +37,20 @@ export default function TaskTileForm() {
     return () => document.body.removeEventListener("click", listener, false);
   }, [currentTask, currentTask.title, datePickerOpen, setIsFocused]);
 
-  function handleSubmitTask(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmitTask(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    console.log("submitting task");
-    setTaskList([...taskList, { ...currentTask, id: uuidv4() }]);
+    taskCreator({ task: currentTask, isMyDay: type === "my_day" });
+
+    const { repeat, id, ...task } = currentTask;
+
     setCurrentTask({
       id: "",
       title: "",
-      completed: false,
       date: null,
       reminder: null,
       repeat: null,
-      important: false,
     });
   }
-  const classNames = (...args: String[]) => args.filter(Boolean).join(" ");
 
   return (
     <form ref={divRef} onSubmit={handleSubmitTask} className={classNames("task-form")}>

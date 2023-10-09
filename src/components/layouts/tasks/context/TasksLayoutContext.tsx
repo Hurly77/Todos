@@ -1,18 +1,18 @@
 import React from "react";
-import { uuidv4 } from "../helpers/task-helpers";
+import { TaskFormat, TaskRow } from "@/lib/sdk/models/TaskModel";
 
 type UseStateProps<T> = [T, React.Dispatch<React.SetStateAction<T>>];
 
 export type TasksLayoutContextProps = {
   sidebarState: UseStateProps<boolean>;
-  taskListState: UseStateProps<Task[]>;
+  taskListState: UseStateProps<TaskFormat[]>;
   taskFormFocusedState: UseStateProps<boolean>;
   currentTaskStates: UseStateProps<Task>;
   datePickerStates: UseStateProps<string | null>;
   taskEditorOpen: boolean;
-  taskInEdit: Task | null;
-  setTaskInEdit: React.Dispatch<React.SetStateAction<Task | null>>;
-  openTaskEditor: (task: Task) => void;
+  taskInEdit: TaskFormat | null;
+  setTaskInEdit: React.Dispatch<React.SetStateAction<TaskFormat | null>>;
+  openTaskEditor: (task: TaskFormat) => void;
   closeTaskEditor: () => void;
 };
 
@@ -24,10 +24,10 @@ export const TasksLayoutContext = React.createContext({} as TasksLayoutContextPr
 
 export default function TasksLayoutContextProvider({ children }: TasksLayoutContextProviderProps) {
   const [sidebarOpen, setSidebarOpen] = React.useState(true);
-  const [taskList, setTaskList] = React.useState([] as Task[]);
+  const [taskList, setTaskList] = React.useState<TaskFormat[]>([]);
   const [taskFormFocused, setTaskFormFocused] = React.useState(true);
   const [calendarOpen, setCalendarOpen] = React.useState(null);
-  const [taskInEdit, setTaskInEdit] = React.useState(null as Task | null);
+  const [taskInEdit, setTaskInEdit] = React.useState<TaskFormat | null>(null);
   const [taskEditorOpen, setTaskEditorOpen] = React.useState(false);
   const [currentTask, setCurrentTask] = React.useState({
     id: "",
@@ -45,18 +45,18 @@ export default function TasksLayoutContextProvider({ children }: TasksLayoutCont
     setTaskInEdit(null);
   };
 
-  function openTaskEditor(task: Task) {
+  function openTaskEditor(task: TaskFormat) {
     setTaskEditorOpen(true);
     setTaskInEdit(task);
   }
 
-  const value = {
+  const value: TasksLayoutContextProps = {
     openTaskEditor,
     closeTaskEditor,
     taskEditorOpen,
     taskInEdit,
     setTaskInEdit,
-    taskListState: [taskList, setTaskList] as UseStateProps<Task[]>,
+    taskListState: [taskList, setTaskList],
     sidebarState: [sidebarOpen, setSidebarOpen] as UseStateProps<boolean>,
     taskFormFocusedState: [taskFormFocused, setTaskFormFocused] as UseStateProps<boolean>,
     currentTaskStates: [currentTask, setCurrentTask] as UseStateProps<Task>,

@@ -3,6 +3,7 @@ import DropdownsReminderDropdown from "../Dropdowns/DropdownsReminderDropdown";
 import DropdownsDueDateDropdown from "../Dropdowns/DropdownsDueDateDropdown";
 import { TasksLayoutContext } from "../../context/TasksLayoutContext";
 import React from "react";
+import { TaskFormat } from "@/lib/sdk/models";
 
 export default function TaskTileFormBottomOptions() {
   const { currentTaskStates } = React.useContext(TasksLayoutContext);
@@ -14,8 +15,8 @@ export default function TaskTileFormBottomOptions() {
   const hasRepeat = !!currentTask?.repeat;
 
   const sharedProps = {
-    task: currentTask,
-    setTask: setCurrentTask as UseStateProps<Task | null>[1],
+    task: currentTask as TaskFormat,
+    setTask: setCurrentTask as UseStateProps<TaskFormat | null>[1],
     datePickerOpen,
     setDatePickerOpen,
   };

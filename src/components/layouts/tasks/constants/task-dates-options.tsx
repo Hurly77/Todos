@@ -41,7 +41,7 @@ export const REMINDER_DROPDOWN_OPTIONS = [
   { key: "next-week", name: "Next Week", value: new Date(NEXT_WEEK) },
 ];
 
-export const REPEAT_DROPDOWN_OPTIONS: { key: string; name: string; value: Task["repeat"] }[] = [
+export const REPEAT_DROPDOWN_OPTIONS: { key: string; name: string; value: NonNullable<Task["repeat"]> }[] = [
   {
     key: "daily",
     name: "Daily",

@@ -1,15 +1,12 @@
-import { CalendarDaysIcon } from "@heroicons/react/24/outline";
 import {
   Dropdown,
   DropdownTrigger,
   DropdownMenu,
   DropdownSection,
   DropdownItem,
-  Chip,
   Popover,
   PopoverTrigger,
   PopoverContent,
-  Button,
 } from "@nextui-org/react";
 import { DUE_DATE_DROPDOWN_OPTIONS } from "../../constants/task-dates-options";
 import DatePicker from "react-datepicker";
@@ -17,17 +14,26 @@ import React from "react";
 import { TasksLayoutContext } from "../../context/TasksLayoutContext";
 import DropdownsTriggerDisplay from "./DropdownsTriggerDisplay";
 import DropdownsDatePickerPopover from "./DropdownsDatePickerPopover";
+import { TaskFormat } from "@/lib/sdk/models";
+import { updateTask } from "@/lib/sdk/methods/update-task";
 
-export default function DropdownsDueDateDropdown(props: TaskSpecificDropdownsProps) {
+export default function DropdownsDueDateDropdown(props: TaskSpecificDropdownsProps<TaskFormat>) {
   const { placeholder, hasChip, setTask, task, datePickerOpen, setDatePickerOpen } = props;
-  const ctx = React.useContext(TasksLayoutContext);
+  const { taskEditorOpen } = React.useContext(TasksLayoutContext);
 
   function handleOnClick(option: (typeof DUE_DATE_DROPDOWN_OPTIONS)[0]) {
-    if (task)
+    if (task) {
       setTask({
         ...task,
         date: option.value,
       });
+    }
+    if (taskEditorOpen && task) {
+      updateTask({
+        id: task.id,
+        date: option.value?.toISOString(),
+      });
+    }
   }
 
   return (
@@ -41,7 +47,7 @@ export default function DropdownsDueDateDropdown(props: TaskSpecificDropdownsPro
           </DropdownTrigger>
           <DropdownMenu aria-label="Due Date" disabledKeys={["Title"]}>
             <DropdownSection showDivider>
-              <DropdownItem isReadOnly key="Title" className="opacity-100 hover:cursor-pointer">
+              <DropdownItem textValue="Due" isReadOnly key="Title" className="opacity-100 hover:cursor-pointer">
                 <h1 className="font-bold text-center">Due</h1>
               </DropdownItem>
             </DropdownSection>
@@ -78,7 +84,15 @@ export default function DropdownsDueDateDropdown(props: TaskSpecificDropdownsPro
           <PopoverContent>
             <DropdownsDatePickerPopover
               date={task?.date || null}
-              onSave={() => setDatePickerOpen(null)}
+              onSave={() => {
+                if (task?.date) {
+                  updateTask({
+                    id: task.id,
+                    date: task?.date?.toISOString(),
+                  });
+                }
+                setDatePickerOpen(null);
+              }}
               handleChange={(date) => {
                 if (task)
                   setTask({

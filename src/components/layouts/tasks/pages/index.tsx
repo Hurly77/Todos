@@ -11,7 +11,7 @@ export default function TodayTaskPage() {
       </h1>
       <span className="text-foreground-600 font-light text-xs">{new Date().toDateString()}</span>
       <div className="pt-10 pb-2">
-        <TaskTileForm />
+        <TaskTileForm type="my_day" />
       </div>
       <TaskTileList />
     </div>

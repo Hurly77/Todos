@@ -7,7 +7,6 @@ const getRepeatString = ({ type, days, interval }: NonNullable<Task["repeat"]>) 
 
   const typeCategory = interval <= 1 ? REPEAT_TYPE_ADVERBS_MAP[type] : `Every ${interval} ${type}`;
   const currentDays = days?.map((day) => DAYS_OF_WEEK[day]);
-  console.log(days);
 
   if (isWeeks && currentDays) {
     const daysString =

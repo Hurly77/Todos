@@ -12,28 +12,22 @@ declare type TasksLayoutContextProviderProps = {
 };
 
 declare type Task = {
-  id: string;
+  id: string | number;
   title: string;
   date: Date | null;
-  completed: boolean;
   reminder: Date | null;
-  important: boolean;
   repeat: {
     interval: number;
-    days: number[];
+    days: number[] | null;
     type: "days" | "weeks" | "months" | "years";
   } | null;
-  steps?: string[];
-  category?: string;
-  files?: File[];
-  notes?: string;
 };
 
-type TaskSpecificDropdownsProps = {
+type TaskSpecificDropdownsProps<T extends TaskFormat> = {
   placeholder?: string;
   hasChip?: boolean;
-  task: Task | null;
-  setTask: React.Dispatch<React.SetStateAction<Task | null>>;
+  task: T | null;
+  setTask: React.Dispatch<React.SetStateAction<T | null>>;
   datePickerOpen: string | null;
   setDatePickerOpen: React.Dispatch<React.SetStateAction<string | null>>;
 };

@@ -5,11 +5,19 @@ import { motion, AnimatePresence } from "framer-motion";
 import { StarIcon } from "@heroicons/react/24/solid";
 import { StarIcon as StarIconOutline } from "@heroicons/react/24/outline";
 import { classNames } from "@/app/helpers/twind-helper";
+import { supabase } from "@/lib/sdk/utilities/supabase";
+import useTaskList from "../../hooks/useTaskList";
+import { TaskFormat, TaskRow } from "@/lib/sdk/models/TaskModel";
 
-function TaskTileList({ tasks, setTasks }: { tasks: Task[]; setTasks: React.Dispatch<React.SetStateAction<Task[]>> }) {
+type TaskListProps = {
+  tasks: TaskFormat[];
+  setTasks: React.Dispatch<React.SetStateAction<TaskFormat[]>>;
+};
+
+function TaskTileList({ tasks, setTasks }: TaskListProps) {
   const ctx = React.useContext(TasksLayoutContext);
 
-  function handleOnChange(id: string, completed: boolean) {
+  async function handleOnChange(id: number, completed: boolean) {
     setTasks((prevTasks) => {
       const updatedTasks = prevTasks.map((task) => {
         if (task.id === id) {
@@ -20,6 +28,8 @@ function TaskTileList({ tasks, setTasks }: { tasks: Task[]; setTasks: React.Disp
 
       return updatedTasks;
     });
+
+    await supabase.from("tasks").update({ completed }).match({ id }).select();
   }
 
   return (
@@ -45,26 +55,24 @@ function TaskTileList({ tasks, setTasks }: { tasks: Task[]; setTasks: React.Disp
             <div className="p-4">
               {task.important ? (
                 <StarIcon
-                  onClick={() => {
-                    const taskIdx = tasks.findIndex((t) => t.id === task.id);
-                    const firstHalf = tasks.slice(0, taskIdx);
-                    const secondHalf = tasks.slice(taskIdx + 1);
-                    const updatedTask = { ...task, important: !task.important };
-                    const updatedTasks = [...firstHalf, updatedTask, ...secondHalf];
-                    setTasks(updatedTasks);
+                  onClick={async () => {
+                    const { data, error } = await supabase
+                      .from("tasks")
+                      .update({ important: false })
+                      .match({ id: task.id })
+                      .select();
                   }}
                   className={classNames("h-5 w-5 fill-primary cursor-pointer")}
                 />
               ) : (
                 <StarIconOutline
                   className="h-5 w-5 stroke-primary cursor-pointer"
-                  onClick={() => {
-                    const taskIdx = tasks.findIndex((t) => t.id === task.id);
-                    const firstHalf = tasks.slice(0, taskIdx);
-                    const secondHalf = tasks.slice(taskIdx + 1);
-                    const updatedTask = { ...task, important: !task.important };
-                    const updatedTasks = [...firstHalf, updatedTask, ...secondHalf];
-                    setTasks(updatedTasks);
+                  onClick={async () => {
+                    const { data, error } = await supabase
+                      .from("tasks")
+                      .update({ important: true })
+                      .match({ id: task.id })
+                      .select();
                   }}
                 />
               )}
@@ -77,15 +85,17 @@ function TaskTileList({ tasks, setTasks }: { tasks: Task[]; setTasks: React.Disp
 }
 
 export default function TaskTiles() {
-  const ctx = React.useContext(TasksLayoutContext);
-  const [taskList, setTaskList] = ctx.taskListState;
+  const { taskInEdit, setTaskInEdit } = React.useContext(TasksLayoutContext);
 
-  const completedTasks = taskList.filter((task) => task.completed);
-  const incompleteTasks = taskList.filter((task) => !task.completed);
+  const { taskList, setTaskList } = useTaskList();
+
+  const incompleteTasks = taskList?.filter((task) => !task.completed);
+  const completedTasks = taskList?.filter((task) => task.completed);
+  if (!taskList) return <div>Loading...</div>;
 
   return (
     <div>
-      <TaskTileList tasks={incompleteTasks} setTasks={setTaskList} />
+      <TaskTileList tasks={incompleteTasks ?? []} setTasks={setTaskList} />
       <div className="py-4">
         <h1 className="pb-4">Completed</h1>
         <TaskTileList tasks={completedTasks} setTasks={setTaskList} />
