@@ -3,34 +3,29 @@ import { ThemeProvider as NextThemeProvider } from "next-themes";
 import AppContextProvider from "./context/AppContext";
 import { supabase } from "@/lib/sdk/utilities/supabase";
 import React from "react";
+import { useRouter } from "next/router";
 type LayoutProps = {
   children: React.ReactNode;
 };
 
 export default function AppLayout({ children }: LayoutProps) {
+  const router = useRouter();
   if (typeof window !== "undefined") {
     // @ts-ignore
     window.supabase = supabase;
   }
   React.useEffect(() => {
-    async function checkLoginStatus() {
-      const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-        console.log(event, session);
-      });
-      console.log(authListener);
-    }
-
-    async function loginUser() {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: "camrbo@gmail.com",
-        password: "pass123",
-      });
-      if (error) {
-        console.log(error);
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_OUT" && !router.pathname.includes("/auth")) router.push("/auth/login");
+      if (["SIGNED_IN", "INITIAL_SESSION"].includes(event) && session && !router.pathname.includes("/tasks")) {
+        console.log("session ", session);
+        router.push("/tasks");
       }
-    }
-    checkLoginStatus();
-  }, []);
+    });
+    return () => {
+      if (authListener.subscription) authListener?.subscription?.unsubscribe();
+    };
+  }, [router]);
   return (
     <AppContextProvider>
       <NextUIProvider>

@@ -49,7 +49,7 @@ export default function NavigationDropdownMenu() {
           <DropdownItem
             onClick={() => {
               supabase.auth.signOut();
-              router.push("/login");
+              router.push("auth/login");
             }}
             key="logout"
           >
