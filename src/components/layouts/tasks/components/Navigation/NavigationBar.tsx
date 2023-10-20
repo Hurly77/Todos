@@ -12,7 +12,7 @@ export default function ToDosNavbar() {
     <div className="z-20 h-16 bg-primary text-primary-foreground shadow-md flex items-center px-12 justify-between">
       <div className="text-2xl flex items-center space-x-4">
         <ListBulletIcon onClick={() => setOpen(!open)} className="h-7 w-7 stroke-primary-foreground cursor-pointer" />
-        <span>Toduit</span>
+        <span aria-label="Brand Label">Toduit</span>
       </div>
       <div className="flex items-center h-full space-x-5">
         <NavigationDropdownMenu />

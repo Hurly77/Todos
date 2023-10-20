@@ -3,6 +3,15 @@ import { test, expect } from "@playwright/test";
 test("Tasks /* titles", async ({ page, baseURL }) => {
   await page.goto((baseURL || "http://localhost:3000") + "/tasks");
 
+  const storage = await page.context().storageState();
+  console.log("STORAGE", storage.origins[0].localStorage);
+
+  const session = await page.evaluate(async () => {
+    return localStorage;
+  });
+
+  console.log("SESSION", session);
+
   // Expect a title "to contain" a substring.
   await expect(page).toHaveTitle(/Today - Toduit/);
   await page.getByLabel("Important").click();

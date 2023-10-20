@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test": "npx playwright test --ui",
     "update-types:local": "sudo supabase gen types typescript --local > src/lib/sdk/constants/supabase-types.d.ts"
   },
   "dependencies": {
@@ -14,6 +15,7 @@
     "@nextui-org/react": "^2.1.7",
     "@supabase/supabase-js": "^2.36.0",
     "autoprefixer": "10.4.15",
+    "dotenv": "^16.3.1",
     "framer-motion": "^10.16.1",
     "next": "13.4.19",
     "next-themes": "^0.2.1",
@@ -24,13 +26,13 @@
     "tailwindcss": "3.3.3"
   },
   "devDependencies": {
-    "eslint": "8.48.0",
-    "eslint-config-next": "13.4.19",
+    "@playwright/test": "^1.37.1",
     "@types/node": "20.5.6",
     "@types/react": "18.2.21",
-    "@types/react-dom": "18.2.7",
-    "@playwright/test": "^1.37.1",
     "@types/react-datepicker": "^4.15.0",
+    "@types/react-dom": "18.2.7",
+    "eslint": "8.48.0",
+    "eslint-config-next": "13.4.19",
     "supabase": "^1.99.5",
     "typescript": "^5.2.2"
   }

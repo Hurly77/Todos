@@ -4,6 +4,9 @@ on:
     branches: [main, master]
   pull_request:
     branches: [main, master]
+env:
+  BASE_URL: https://www.example.com
+
 jobs:
   test:
     timeout-minutes: 60
@@ -13,16 +16,10 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - uses: supabase/setup-cli@v1
-        with:
-          version: latest
-      - run: supabase start
       - name: Install dependencies
         run: yarn
       - name: Install Playwright Browsers
         run: yarn playwright install --with-deps
-      - name: start dev server
-        run: yarn dev
       - name: Run Playwright tests
         run: yarn playwright test
       - uses: actions/upload-artifact@v3
@@ -31,4 +28,3 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 30
-
