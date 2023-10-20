@@ -6,6 +6,8 @@ on:
     branches: [main, master]
 env:
   BASE_URL: "http://localhost:3000"
+  TEST_USER_EMAIL: "camrbo@gmail.com"
+  TEST_USER_PASSWORD: "pass123"
 
 jobs:
   test:
@@ -16,10 +18,15 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
       - name: Install dependencies
         run: yarn
       - name: Install Playwright Browsers
         run: yarn playwright install --with-deps
+      - name: Supabase
+        run: supabase db start
       - name: Run Playwright tests
         run: yarn playwright test
       - uses: actions/upload-artifact@v3
