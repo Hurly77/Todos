@@ -50,7 +50,11 @@ export default function LoginForm({ formType }: { formType: AuthFormType }) {
           </div>
         </CardHeader>
         <CardBody className="px-3 py-0 pb-4">
-          {error && <span className="text-danger font-medium pb-1">*{error}</span>}
+          {error && (
+            <span aria-label="auth-error" className="text-danger font-medium pb-1">
+              *{error}
+            </span>
+          )}
           <div className="space-y-4">
             <Input
               autoComplete="email"
