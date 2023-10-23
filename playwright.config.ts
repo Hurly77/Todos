@@ -12,9 +12,8 @@ import { defineConfig, devices } from "@playwright/test";
 import dotenv from "dotenv";
 import path from "path";
 
-dotenv.config();
-dotenv.config({ path: path.resolve(__dirname, "..", ".env.development.*") });
-dotenv.config({ path: path.resolve(__dirname, "..", ".env.*") });
+// dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, "", ".env.test") });
 export default defineConfig({
   testDir: "./tests",
   /* Run tests in files in parallel */
