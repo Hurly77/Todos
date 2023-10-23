@@ -28,7 +28,8 @@ setup("authenticate", async ({ page, baseURL }) => {
   await page.getByLabel("Password").fill(process.env.TEST_USER_PASSWORD ?? "");
   await page.getByRole("button", { name: "Login" }).click();
   // Wait until the page receives the cookies.
-  //
+
+  await expect(page.getByLabel("auth-error")).not.toBeVisible();
   // Sometimes login flow sets cookies in the process of several redirects.
   // Wait for the final URL to ensure that the cookies are actually set.
   await page.waitForURL(baseURL + "/tasks");
