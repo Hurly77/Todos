@@ -14,6 +14,7 @@ import path from "path";
 
 dotenv.config();
 dotenv.config({ path: path.resolve(__dirname, "..", ".env.development.*") });
+dotenv.config({ path: path.resolve(__dirname, "..", ".env.*") });
 export default defineConfig({
   testDir: "./tests",
   /* Run tests in files in parallel */
