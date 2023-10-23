@@ -25,13 +25,19 @@ jobs:
       - uses: supabase/setup-cli@v1
         with:
           version: latest
-      - name: Supabase
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Supabase start & reset
         run: supabase db start && supabase db reset
+      - name: Supabase lint
+        run: supabase db lint
       - name: Install dependencies
         run: yarn
       - name: Install Playwright Browsers
         run: yarn playwright install --with-deps
-
+      - name: CP ENV file
+        run: cp .env.test .env.development
       - name: Run Playwright tests
         run: yarn playwright test
       - uses: actions/upload-artifact@v3
