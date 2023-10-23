@@ -1,6 +1,20 @@
 import { test as setup, expect } from "@playwright/test";
+import { supabase } from "../src/lib/sdk/utilities/supabase";
 
 const authFile = "playwright/.auth/session.json";
+
+setup("supabase auth working", async ({}) => {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: process.env.TEST_USER_EMAIL ?? "",
+    password: process.env.TEST_USER_PASSWORD ?? "",
+  });
+
+  if (error) console.log("ERROR", error);
+  expect(error).toBeNull();
+  expect(data).not.toBeNull();
+  expect(data?.user).not.toBeNull();
+  expect(data?.session).not.toBeNull();
+});
 
 setup("authenticate failed", async ({ page, baseURL }) => {
   // Perform authentication steps. Replace these actions with your own.
