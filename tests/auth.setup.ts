@@ -3,6 +3,16 @@ import { supabase } from "../src/lib/sdk/utilities/supabase";
 
 const authFile = "playwright/.auth/session.json";
 
+setup("expect env vars to be set", async ({}) => {
+  expect(process.env.CI).toBeDefined();
+  expect(process.env.TEST_USER_EMAIL).toBeDefined();
+  expect(process.env.TEST_USER_PASSWORD).toBeDefined();
+  expect(process.env.TEST_USER_EMAIL).toBeDefined();
+  expect(process.env.BASE_URL).toBeDefined();
+  expect(process.env.NEXT_PUBLIC_SUPABASE_URL).toBeDefined();
+  expect(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY).toBeDefined();
+});
+
 setup("supabase auth working", async ({}) => {
   const { data, error } = await supabase.auth.signInWithPassword({
     email: process.env.TEST_USER_EMAIL ?? "",
