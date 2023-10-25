@@ -4,6 +4,14 @@ on:
     branches: [main, master]
   pull_request:
     branches: [main, master]
+env:
+  BASE_URL: "http://localhost:3000"
+  TEST_USER_EMAIL: "camrbo@gmail.com"
+  TEST_USER_PASSWORD: "pass123"
+  SUPABASE_DB_URL: "postgresql://postgres:postgres@localhost:54322/postgres"
+  NEXT_PUBLIC_SUPABASE_URL: "http://localhost:54321"
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0"
+
 jobs:
   test:
     timeout-minutes: 60
@@ -16,21 +24,14 @@ jobs:
       - uses: supabase/setup-cli@v1
         with:
           version: latest
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - name: Supabase start & reset
-        run: supabase db start && supabase db reset
-      - name: Supabase lint
-        run: supabase db lint
       - name: Install dependencies
         run: yarn
       - name: Install Playwright Browsers
         run: yarn playwright install --with-deps
-      - name: CP ENV file
-        run: cp .env.test .env.development
+      - name: Supabase
+        run: supabase db start
       - name: Run Playwright tests
-        run: npx playwright test
+        run: yarn playwright test
       - uses: actions/upload-artifact@v3
         if: always()
         with:
