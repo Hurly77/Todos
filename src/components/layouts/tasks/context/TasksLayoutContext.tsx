@@ -42,7 +42,7 @@ export default function TasksLayoutContextProvider({ children }: TasksLayoutCont
 
   const closeTaskEditor = () => {
     setTaskEditorOpen(false);
-    setTaskInEdit(null);
+    setTimeout(() => setTaskInEdit(null), 600);
   };
 
   function openTaskEditor(task: TaskFormat) {
