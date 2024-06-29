@@ -9,6 +9,7 @@ import { supabase } from "@/lib/sdk/utilities/supabase";
 import useTaskList from "../../hooks/useTaskList";
 import { TaskFormat, TaskRow } from "@/lib/sdk/models/TaskModel";
 import { TaskFetcherKeys } from "@/lib/sdk/constants/global-enums.";
+import TaskTile from "./TaskTile";
 
 type TaskListProps = {
   tasks: TaskFormat[];
@@ -37,48 +38,7 @@ function TaskTileList({ tasks, setTasks }: TaskListProps) {
     <div>
       <motion.ul initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="space-y-2">
         {tasks.map((task) => (
-          <motion.li
-            key={task.id}
-            exit={{ opacity: 0, y: 25 }}
-            animate={{ opacity: 1, y: 0 }}
-            initial={{ opacity: 0, y: -25 }}
-            className="z-0  justify-between relative border border-default-200 bg-background rounded flex items-center shadow-sm"
-          >
-            <div onClick={() => ctx.openTaskEditor(task)} className="w-full p-4">
-              <Checkbox
-                radius="full"
-                color="primary"
-                isSelected={task.completed}
-                onValueChange={(isSelected) => handleOnChange(task.id, isSelected)}
-              />
-              <span>{task.title}</span>
-            </div>
-            <div className="p-4">
-              {task.important ? (
-                <StarIcon
-                  onClick={async () => {
-                    const { data, error } = await supabase
-                      .from("tasks")
-                      .update({ important: false })
-                      .match({ id: task.id })
-                      .select();
-                  }}
-                  className={classNames("h-5 w-5 fill-primary cursor-pointer")}
-                />
-              ) : (
-                <StarIconOutline
-                  className="h-5 w-5 stroke-primary cursor-pointer"
-                  onClick={async () => {
-                    const { data, error } = await supabase
-                      .from("tasks")
-                      .update({ important: true })
-                      .match({ id: task.id })
-                      .select();
-                  }}
-                />
-              )}
-            </div>
-          </motion.li>
+          <TaskTile key={task.id} task={task} handleOnChange={handleOnChange} />
         ))}
       </motion.ul>
     </div>
