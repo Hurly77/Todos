@@ -11,30 +11,44 @@ import TaskEditorCategories from "./TaskEditorCategories";
 import TaskEditorAddFiles from "./TaskEditorAddFiles";
 import TaskEditorNotes from "./TaskEditorNotes";
 import TaskEditorBottomMenu from "./TaskEditorBottomMenu";
+import { useSizes, useIsSmall } from "@/app/hooks/useMediaQuery";
 
 export default function TaskEditor() {
+  const isSmall = useIsSmall();
   const ctx = React.useContext(TasksLayoutContext);
   const open = ctx.taskEditorOpen;
   const { taskInEdit } = ctx;
 
-  if (!taskInEdit) return <></>;
+  console.log(isSmall);
+
+  const variantsSmall = {
+    open: { x: 0 },
+    closed: { x: "24rem" },
+    leave: { x: "24rem" },
+  };
+
+  const variantsLarge = {
+    open: { width: "24rem" },
+    closed: { width: "0rem" },
+    leave: { width: "0rem" },
+  };
+
   return (
     <AnimatePresence>
-      {open && (
+      {open && taskInEdit && (
         <motion.div
-          transition={{
-            duration: 0.25,
-            type: "tween",
-          }}
-          initial={{ width: "0rem" }}
-          animate={{ width: "24rem" }}
-          exit={{ width: "0rem" }}
+          transition={{ company: "", duration: 0.5, type: "tween" }}
+          variants={isSmall ? variantsSmall : variantsLarge}
+          initial="closed"
+          animate="open"
+          exit="leave"
           className={classNames(
-            "w-full overflow-hidden grow flex flex-col z-10 max-w-sm  shadow-lg bg-default-100 dark:bg-default"
+            isSmall ? "absolute z-20 bg-background h-full max-h-[calc(100vh-4rem)]" : "",
+            "w-full overflow-hidden flex flex-col z-10 sm:max-w-sm  shadow-lg bg-content2 dark:bg-content1"
           )}
         >
-          <form className="pt-4 w-full h-full grow flex flex-col justify-between">
-            <div className="px-6 pb-4 space-y-2 w-full grow overflow-y-auto max-h-[calc(100vh_-_150px)]">
+          <form className="pt-4 w-full h-full grow flex flex-col justify-between min-w-[calc(24rem-24px)]">
+            <div className="px-6 pb-4 space-y-2 w-full grow overflow-y-auto max-h-[calc(100vh-150px)]">
               <TaskEditorTitleAnStepInputs />
               <TaskEditorAddToMyDay />
               <TaskEditorDropdowns />

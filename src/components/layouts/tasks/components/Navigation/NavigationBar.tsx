@@ -9,7 +9,7 @@ export default function ToDosNavbar() {
   const [open, setOpen] = ctx.sidebarState;
 
   return (
-    <div className="z-20 h-16 bg-primary text-primary-foreground shadow-md flex items-center px-12 justify-between">
+    <div className="z-40 h-16 bg-primary text-primary-foreground shadow-md flex items-center px-12 justify-between">
       <div className="text-2xl flex items-center space-x-4">
         <ListBulletIcon onClick={() => setOpen(!open)} className="h-7 w-7 stroke-primary-foreground cursor-pointer" />
         <span aria-label="Brand Label">Toduit</span>
