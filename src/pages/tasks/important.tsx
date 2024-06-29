@@ -10,7 +10,7 @@ export const ImportantTasks: NextPageWithLayout = () => {
         <title>Important - Toduit</title>
         <meta name="description" content="Important Tasks" />
       </Head>
-      <ImportantTasksPage />;
+      <ImportantTasksPage />
     </>
   );
 };
