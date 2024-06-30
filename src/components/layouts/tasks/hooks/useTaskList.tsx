@@ -4,90 +4,36 @@ import { TaskFormat } from "@/lib/sdk/models";
 import { supabase } from "@/lib/sdk/utilities/supabase";
 import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 import React from "react";
-
-type UseTaskListData = Awaited<ReturnType<typeof getCurrentUserTasks>>;
-type UTaskListCallback = (payload: RealtimePostgresChangesPayload<TaskFormat>) => void;
+import useSWR from "swr";
 
 export default function useTaskList(type?: TaskFetcherKeys) {
-  const [dataFetched, setDataFetched] = React.useState(false);
-  const [taskList, setTaskList] = React.useState([] as UseTaskListData);
+  const { data, error, mutate } = useSWR(type, () => getCurrentUserTasks(type ?? TaskFetcherKeys.ALL), {
+    revalidateOnFocus: false,
+  });
 
   React.useEffect(() => {
-    async function fetchTasks() {
-      setDataFetched(true);
-      const data = await getCurrentUserTasks(type ?? TaskFetcherKeys.ALL);
-      if (data) setTaskList(data);
-    }
+    const onPostgresChange = (payload: RealtimePostgresChangesPayload<TaskFormat>) => mutate();
 
-    if (!dataFetched) fetchTasks();
-  }, [dataFetched, type]);
-
-  React.useEffect(() => {
     const taskChannel = supabase
       .channel("realtime tasksList")
-      .on<TaskFormat>(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "tasks",
-        },
-        (payload) => {
-          console.log("realtime test", payload);
-
-          setDataFetched(false);
-        }
+      .on<TaskFormat>("postgres_changes", { event: "*", schema: "public", table: "tasks" }, (payload) =>
+        onPostgresChange(payload)
       )
       .subscribe();
 
     const taskRepeatChannel = supabase
       .channel("realtime taskRepeatsList")
-      .on<TaskFormat>(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "task_repeat",
-        },
-        (payload) => {
-          console.log("realtime test", payload);
-
-          setDataFetched(false);
-        }
-      )
+      .on<TaskFormat>("postgres_changes", { event: "*", schema: "public", table: "task_repeat" }, onPostgresChange)
       .subscribe();
 
     const taskStepChannel = supabase
       .channel("realtime task Steps List")
-      .on<TaskFormat>(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "task_steps",
-        },
-        (payload) => {
-          console.log("realtime test", payload);
-
-          setDataFetched(false);
-        }
-      )
+      .on<TaskFormat>("postgres_changes", { event: "*", schema: "public", table: "task_steps" }, onPostgresChange)
       .subscribe();
+
     const taskTagChannel = supabase
       .channel("realtime taskTag")
-      .on<TaskFormat>(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "task_tag",
-        },
-        (payload) => {
-          console.log("realtime test", payload);
-
-          setDataFetched(false);
-        }
-      )
+      .on<TaskFormat>("postgres_changes", { event: "*", schema: "public", table: "task_tag" }, onPostgresChange)
       .subscribe();
 
     return () => {
@@ -96,7 +42,7 @@ export default function useTaskList(type?: TaskFetcherKeys) {
       supabase.removeChannel(taskStepChannel);
       supabase.removeChannel(taskTagChannel);
     };
-  }, []);
+  }, [mutate]);
 
-  return { taskList, setTaskList };
+  return { taskList: data ? data : [], mutate };
 }

@@ -2,7 +2,6 @@ declare type UseStateProps<T> = [T, React.Dispatch<React.SetStateAction<T>>];
 
 declare type TasksLayoutContextProps = {
   sidebarState: UseStateProps<boolean>;
-  taskListState: UseStateProps<Task[]>;
   taskFormFocusedState: UseStateProps<boolean>;
   currentTaskStates: UseStateProps<Task>;
 };

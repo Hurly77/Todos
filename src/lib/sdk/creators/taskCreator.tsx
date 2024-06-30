@@ -1,21 +1,27 @@
+import { TaskFetcherKeys } from "../constants/global-enums.";
 import { TaskRepeatInsert } from "../models/TaskModel";
 import { supabase } from "../utilities/supabase";
 
-export default async function taskCreator({ task, isMyDay }: { task: Task; isMyDay?: boolean }) {
-  const { repeat, ...restOfTask } = task;
+export default async function taskCreator({ task, type }: { task: Task; type?: TaskFetcherKeys }) {
+  const { repeat, date, title, reminder } = task;
 
   const { data: userData } = await supabase.auth.getUser();
   const user = userData.user;
 
+  const isMyDay = type === "my_day";
+  const isPlanned = type === "planned";
+  const isImportant = type === "important";
+  const dueDate = date ? date : !date && isPlanned ? new Date() : null;
+
   const taskData = {
-    title: restOfTask.title,
-    date: restOfTask?.date?.toISOString() || null,
-    reminder: restOfTask?.reminder?.toISOString() || null,
-    is_my_day: isMyDay ?? false,
-    my_day_date: isMyDay ? new Date(new Date().setHours(0, 0, 0, 0)).toISOString() : null,
+    title,
     completed: false,
-    important: false,
+    is_my_day: isMyDay,
+    important: isImportant,
     user_id: user?.id as string,
+    date: dueDate?.toISOString() ?? null,
+    reminder: reminder?.toISOString() || null,
+    my_day_date: isMyDay ? new Date(new Date().setHours(0, 0, 0, 0)).toISOString() : null,
   };
 
   const { data: newTask } = await supabase.from("tasks").insert([taskData]).select("id")?.single();

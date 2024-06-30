@@ -6,15 +6,32 @@ import { Checkbox } from "@nextui-org/react";
 import { motion } from "framer-motion";
 import React from "react";
 import { TasksLayoutContext } from "../../context/TasksLayoutContext";
+import { TaskFetcherKeys } from "@/lib/sdk/constants/global-enums.";
+import useTaskList from "../../hooks/useTaskList";
 
 export default function TaskTile(props: {
   task: TaskFormat;
+  type: TaskFetcherKeys;
   handleOnChange: (id: number, completed: boolean) => void;
 }) {
-  const { task, handleOnChange } = props;
+  const { task, type, handleOnChange } = props;
 
   const ctx = React.useContext(TasksLayoutContext);
+  const { mutate } = useTaskList(type);
   const [isImportant, setIsImportant] = React.useState(task.important);
+  const [isComplete, setIsComplete] = React.useState(task.completed);
+
+  async function onChangeImportance() {
+    setIsImportant(!isImportant);
+    await supabase.from("tasks").update({ important: !isImportant }).match({ id: task.id }).select();
+    if (type === "important" && !isImportant) {
+      console.log("removing task");
+      mutate((prevTasks) => {
+        const updatedTasks = prevTasks?.filter((t) => t.id !== task.id);
+        return updatedTasks;
+      });
+    }
+  }
 
   return (
     <motion.li
@@ -28,10 +45,10 @@ export default function TaskTile(props: {
         <Checkbox
           radius="full"
           color="primary"
-          isSelected={task.completed}
-          onValueChange={(isSelected) => {
-            setIsImportant(isSelected);
-            handleOnChange(task.id, isSelected);
+          isSelected={isComplete}
+          onValueChange={(complete) => {
+            setIsComplete(!isComplete);
+            handleOnChange(task.id, complete);
           }}
         />
         <span>{task.title}</span>
@@ -39,10 +56,7 @@ export default function TaskTile(props: {
       <div className="p-4">
         <StarIcon
           className={cls("h-5 w-5 cursor-pointer stroke-primary", isImportant ? "fill-primary" : "")}
-          onClick={async () => {
-            setIsImportant(!isImportant);
-            await supabase.from("tasks").update({ important: !isImportant }).match({ id: task.id }).select();
-          }}
+          onClick={onChangeImportance}
         />
       </div>
     </motion.li>
