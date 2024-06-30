@@ -19,8 +19,6 @@ export default function TaskEditor() {
   const open = ctx.taskEditorOpen;
   const { taskInEdit } = ctx;
 
-  console.log(isSmall);
-
   const variantsSmall = {
     open: { x: 0 },
     closed: { x: "24rem" },

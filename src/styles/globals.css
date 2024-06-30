@@ -19,6 +19,14 @@
   .task-form--inner-wrapper {
     @apply z-10 relative border-b bg-white dark:bg-default-50  p-2 rounded flex items-center  border-default;
   }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    @apply w-[5px] h-[5px] bg-default rounded-[4px];
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-primary h-[5px] rounded-[4px];
+  }
 }
 
 .react-datepicker {
