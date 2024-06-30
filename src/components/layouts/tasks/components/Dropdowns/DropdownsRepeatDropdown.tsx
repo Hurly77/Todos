@@ -18,6 +18,7 @@ import { TaskFormat } from "@/lib/sdk/models";
 
 import createTaskRepeat from "@/lib/sdk/methods/create-task-repeat";
 import updateTaskRepeat from "@/lib/sdk/methods/update-task-repeat";
+import { supabase } from "@/lib/sdk/utilities/supabase";
 
 export default function DropdownsRepeatDropdown(props: TaskSpecificDropdownsProps<TaskFormat>) {
   const { placeholder, hasChip, setTask, task, datePickerOpen, setDatePickerOpen } = props;
@@ -39,6 +40,18 @@ export default function DropdownsRepeatDropdown(props: TaskSpecificDropdownsProp
         indefinite: true,
         task_id: task?.id,
       });
+    }
+  }
+
+  async function handleRemoveRepeat() {
+    if (task) {
+      setTask({
+        ...task,
+        repeat: null,
+      });
+    }
+    if (taskEditorOpen && task?.repeat_id) {
+      await supabase.from("task_repeat").delete().eq("id", task?.repeat_id);
     }
   }
 
@@ -70,9 +83,20 @@ export default function DropdownsRepeatDropdown(props: TaskSpecificDropdownsProp
                 </DropdownItem>
               ))}
             </DropdownSection>
-            <DropdownSection>
+            <DropdownSection showDivider={!!task?.repeat}>
               <DropdownItem onClick={() => setDatePickerOpen("repeat")} key="Custom">
                 Custom
+              </DropdownItem>
+            </DropdownSection>
+            <DropdownSection className={task?.repeat ? "block" : "hidden"}>
+              <DropdownItem
+                key="Remove"
+                color="danger"
+                variant="solid"
+                className="text-danger font-medium"
+                onClick={handleRemoveRepeat}
+              >
+                Remove Repeat
               </DropdownItem>
             </DropdownSection>
           </DropdownMenu>

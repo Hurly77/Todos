@@ -5,16 +5,20 @@ import { TasksLayoutContext } from "../../context/TasksLayoutContext";
 
 import "react-datepicker/dist/react-datepicker.css";
 import TaskTileFormBottom from "./TaskTileFormBottom";
-import { uuidv4 } from "../../helpers/task-helpers";
+import { getPlaceholderTask, uuidv4 } from "../../helpers/task-helpers";
 import { supabase } from "@/lib/sdk/utilities/supabase";
 import taskCreator from "@/lib/sdk/creators/taskCreator";
 import { classNames } from "@/components/layouts/app/helpers/twind-helper";
 import { TaskFetcherKeys } from "@/lib/sdk/constants/global-enums.";
+import useTaskList from "../../hooks/useTaskList";
+import { TaskFormat } from "@/lib/sdk/models";
 
 export default function TaskTileForm({ type }: { type?: TaskFetcherKeys }) {
   const ctx = React.useContext(TasksLayoutContext);
+  const { mutate, taskList } = useTaskList(type ?? TaskFetcherKeys.ALL);
 
-  const [taskList, setTaskList] = ctx.taskListState;
+  const lastId = Math.max(...(taskList?.map((t) => t.id) ?? [0]));
+
   const [isFocused, setIsFocused] = ctx.taskFormFocusedState;
 
   const [currentTask, setCurrentTask] = ctx.currentTaskStates;
@@ -40,7 +44,14 @@ export default function TaskTileForm({ type }: { type?: TaskFetcherKeys }) {
 
   async function handleSubmitTask(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    taskCreator({ task: currentTask, isMyDay: type === "my_day" });
+    await taskCreator({ task: currentTask, type: type ?? TaskFetcherKeys.ALL });
+    const optimisticTask: TaskFormat = {
+      ...currentTask,
+      id: lastId + 1,
+      ...getPlaceholderTask(type ?? TaskFetcherKeys.ALL),
+    };
+
+    mutate((tasks) => [optimisticTask, ...(tasks ?? [])]);
 
     const { repeat, id, ...task } = currentTask;
 

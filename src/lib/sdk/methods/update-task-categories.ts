@@ -1,3 +1,4 @@
+import { Database } from "../constants/supabase-types";
 import { supabase } from "../utilities/supabase";
 
 export default async function updateTaskCategories(

@@ -22,9 +22,9 @@ export default function TaskLayout({ children }: ToDosLayoutProps) {
     <ToDosLayoutContextProvider>
       <div className={"layout"}>
         <Navigation />
-        <div className="h-full flex grow">
+        <div className="h-full flex grow border bg-default-100">
           <Sidebar />
-          {children}
+          <div className="overflow-y-auto flex h-full max-h-[calc(100vh-66px)] custom-scrollbar grow">{children}</div>
           <TaskEditor />
         </div>
       </div>

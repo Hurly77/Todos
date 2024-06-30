@@ -7,8 +7,7 @@ import { TasksLayoutContext } from "../../context/TasksLayoutContext";
 import { updateTask } from "@/lib/sdk/methods";
 
 export default function TaskTitleAnStepInputs() {
-  const { taskInEdit, setTaskInEdit, taskListState } = React.useContext(TasksLayoutContext);
-  const [taskList] = taskListState;
+  const { taskInEdit, setTaskInEdit } = React.useContext(TasksLayoutContext);
   const [nextStep, setNextStep] = React.useState({
     task_id: taskInEdit?.id,
     title: "",
@@ -28,6 +27,7 @@ export default function TaskTitleAnStepInputs() {
     <div className="p-4 w-full dark:bg-default-100 bg-white space-y-1 rounded-sm">
       <div className="flex sticky top-0 dark:bg-default-100 bg-white z-10">
         <Checkbox
+          defaultSelected={taskInEdit?.completed}
           onValueChange={(isCompleted) =>
             updateTask({
               id: taskInEdit.id,

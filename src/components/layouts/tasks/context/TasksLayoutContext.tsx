@@ -1,11 +1,11 @@
 import React from "react";
 import { TaskFormat, TaskRow } from "@/lib/sdk/models/TaskModel";
+import useTaskList from "../hooks/useTaskList";
 
 type UseStateProps<T> = [T, React.Dispatch<React.SetStateAction<T>>];
 
 export type TasksLayoutContextProps = {
   sidebarState: UseStateProps<boolean>;
-  taskListState: UseStateProps<TaskFormat[]>;
   taskFormFocusedState: UseStateProps<boolean>;
   currentTaskStates: UseStateProps<Task>;
   datePickerStates: UseStateProps<string | null>;
@@ -24,7 +24,6 @@ export const TasksLayoutContext = React.createContext({} as TasksLayoutContextPr
 
 export default function TasksLayoutContextProvider({ children }: TasksLayoutContextProviderProps) {
   const [sidebarOpen, setSidebarOpen] = React.useState(true);
-  const [taskList, setTaskList] = React.useState<TaskFormat[]>([]);
   const [taskFormFocused, setTaskFormFocused] = React.useState(true);
   const [calendarOpen, setCalendarOpen] = React.useState(null);
   const [taskInEdit, setTaskInEdit] = React.useState<TaskFormat | null>(null);
@@ -56,7 +55,6 @@ export default function TasksLayoutContextProvider({ children }: TasksLayoutCont
     taskEditorOpen,
     taskInEdit,
     setTaskInEdit,
-    taskListState: [taskList, setTaskList],
     sidebarState: [sidebarOpen, setSidebarOpen] as UseStateProps<boolean>,
     taskFormFocusedState: [taskFormFocused, setTaskFormFocused] as UseStateProps<boolean>,
     currentTaskStates: [currentTask, setCurrentTask] as UseStateProps<Task>,
