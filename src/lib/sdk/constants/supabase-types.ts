@@ -1,6 +1,6 @@
-declare type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
-declare interface Database {
+export type Database = {
   graphql_public: {
     Tables: {
       [_ in never]: never;
@@ -60,6 +60,7 @@ declare interface Database {
           {
             foreignKeyName: "task_repeat_task_id_fkey";
             columns: ["task_id"];
+            isOneToOne: true;
             referencedRelation: "tasks";
             referencedColumns: ["id"];
           }
@@ -70,27 +71,28 @@ declare interface Database {
           completed: boolean;
           created_at: string;
           id: number;
-          task_id: number | null;
+          task_id: number;
           title: string | null;
         };
         Insert: {
           completed?: boolean;
           created_at?: string;
           id?: number;
-          task_id?: number | null;
+          task_id: number;
           title?: string | null;
         };
         Update: {
           completed?: boolean;
           created_at?: string;
           id?: number;
-          task_id?: number | null;
+          task_id?: number;
           title?: string | null;
         };
         Relationships: [
           {
             foreignKeyName: "task_steps_task_id_fkey";
             columns: ["task_id"];
+            isOneToOne: false;
             referencedRelation: "tasks";
             referencedColumns: ["id"];
           }
@@ -134,6 +136,7 @@ declare interface Database {
           {
             foreignKeyName: "task_tag_task_id_fkey";
             columns: ["task_id"];
+            isOneToOne: false;
             referencedRelation: "tasks";
             referencedColumns: ["id"];
           }
@@ -190,42 +193,27 @@ declare interface Database {
         };
         Relationships: [
           {
-            foreignKeyName: "tasks_repeat_id_fkey";
+            foreignKeyName: "public_tasks_repeat_id_fkey";
             columns: ["repeat_id"];
+            isOneToOne: false;
             referencedRelation: "task_repeat";
             referencedColumns: ["id"];
           },
           {
             foreignKeyName: "tasks_tag_id_fkey";
             columns: ["tag_id"];
+            isOneToOne: false;
             referencedRelation: "task_tag";
             referencedColumns: ["id"];
           },
           {
             foreignKeyName: "tasks_user_id_fkey";
             columns: ["user_id"];
+            isOneToOne: false;
             referencedRelation: "users";
             referencedColumns: ["id"];
           }
         ];
-      };
-      test_data: {
-        Row: {
-          created_at: string;
-          id: number;
-          name: string | null;
-        };
-        Insert: {
-          created_at?: string;
-          id?: number;
-          name?: string | null;
-        };
-        Update: {
-          created_at?: string;
-          id?: number;
-          name?: string | null;
-        };
-        Relationships: [];
       };
     };
     Views: {
@@ -252,6 +240,7 @@ declare interface Database {
           id: string;
           name: string;
           owner: string | null;
+          owner_id: string | null;
           public: boolean | null;
           updated_at: string | null;
         };
@@ -263,6 +252,7 @@ declare interface Database {
           id: string;
           name: string;
           owner?: string | null;
+          owner_id?: string | null;
           public?: boolean | null;
           updated_at?: string | null;
         };
@@ -274,17 +264,11 @@ declare interface Database {
           id?: string;
           name?: string;
           owner?: string | null;
+          owner_id?: string | null;
           public?: boolean | null;
           updated_at?: string | null;
         };
-        Relationships: [
-          {
-            foreignKeyName: "buckets_owner_fkey";
-            columns: ["owner"];
-            referencedRelation: "users";
-            referencedColumns: ["id"];
-          }
-        ];
+        Relationships: [];
       };
       migrations: {
         Row: {
@@ -316,6 +300,7 @@ declare interface Database {
           metadata: Json | null;
           name: string | null;
           owner: string | null;
+          owner_id: string | null;
           path_tokens: string[] | null;
           updated_at: string | null;
           version: string | null;
@@ -328,6 +313,7 @@ declare interface Database {
           metadata?: Json | null;
           name?: string | null;
           owner?: string | null;
+          owner_id?: string | null;
           path_tokens?: string[] | null;
           updated_at?: string | null;
           version?: string | null;
@@ -340,6 +326,7 @@ declare interface Database {
           metadata?: Json | null;
           name?: string | null;
           owner?: string | null;
+          owner_id?: string | null;
           path_tokens?: string[] | null;
           updated_at?: string | null;
           version?: string | null;
@@ -348,7 +335,103 @@ declare interface Database {
           {
             foreignKeyName: "objects_bucketId_fkey";
             columns: ["bucket_id"];
+            isOneToOne: false;
             referencedRelation: "buckets";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      s3_multipart_uploads: {
+        Row: {
+          bucket_id: string;
+          created_at: string;
+          id: string;
+          in_progress_size: number;
+          key: string;
+          owner_id: string | null;
+          upload_signature: string;
+          version: string;
+        };
+        Insert: {
+          bucket_id: string;
+          created_at?: string;
+          id: string;
+          in_progress_size?: number;
+          key: string;
+          owner_id?: string | null;
+          upload_signature: string;
+          version: string;
+        };
+        Update: {
+          bucket_id?: string;
+          created_at?: string;
+          id?: string;
+          in_progress_size?: number;
+          key?: string;
+          owner_id?: string | null;
+          upload_signature?: string;
+          version?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "s3_multipart_uploads_bucket_id_fkey";
+            columns: ["bucket_id"];
+            isOneToOne: false;
+            referencedRelation: "buckets";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      s3_multipart_uploads_parts: {
+        Row: {
+          bucket_id: string;
+          created_at: string;
+          etag: string;
+          id: string;
+          key: string;
+          owner_id: string | null;
+          part_number: number;
+          size: number;
+          upload_id: string;
+          version: string;
+        };
+        Insert: {
+          bucket_id: string;
+          created_at?: string;
+          etag: string;
+          id?: string;
+          key: string;
+          owner_id?: string | null;
+          part_number: number;
+          size?: number;
+          upload_id: string;
+          version: string;
+        };
+        Update: {
+          bucket_id?: string;
+          created_at?: string;
+          etag?: string;
+          id?: string;
+          key?: string;
+          owner_id?: string | null;
+          part_number?: number;
+          size?: number;
+          upload_id?: string;
+          version?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "s3_multipart_uploads_parts_bucket_id_fkey";
+            columns: ["bucket_id"];
+            isOneToOne: false;
+            referencedRelation: "buckets";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "s3_multipart_uploads_parts_upload_id_fkey";
+            columns: ["upload_id"];
+            isOneToOne: false;
+            referencedRelation: "s3_multipart_uploads";
             referencedColumns: ["id"];
           }
         ];
@@ -383,7 +466,7 @@ declare interface Database {
         Args: {
           name: string;
         };
-        Returns: unknown;
+        Returns: string[];
       };
       get_size_by_bucket: {
         Args: Record<PropertyKey, never>;
@@ -391,6 +474,41 @@ declare interface Database {
           size: number;
           bucket_id: string;
         }[];
+      };
+      list_multipart_uploads_with_delimiter: {
+        Args: {
+          bucket_id: string;
+          prefix_param: string;
+          delimiter_param: string;
+          max_keys?: number;
+          next_key_token?: string;
+          next_upload_token?: string;
+        };
+        Returns: {
+          key: string;
+          id: string;
+          created_at: string;
+        }[];
+      };
+      list_objects_with_delimiter: {
+        Args: {
+          bucket_id: string;
+          prefix_param: string;
+          delimiter_param: string;
+          max_keys?: number;
+          start_after?: string;
+          next_token?: string;
+        };
+        Returns: {
+          name: string;
+          id: string;
+          metadata: Json;
+          updated_at: string;
+        }[];
+      };
+      operation: {
+        Args: Record<PropertyKey, never>;
+        Returns: string;
       };
       search: {
         Args: {
@@ -420,4 +538,76 @@ declare interface Database {
       [_ in never]: never;
     };
   };
-}
+};
+
+type PublicSchema = Database[Extract<keyof Database, "public">];
+
+export type Tables<
+  PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] & PublicSchema["Views"]) | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+        Database[PublicTableNameOrOptions["schema"]]["Views"])
+    : never = never
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R;
+    }
+    ? R
+    : never
+  : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] & PublicSchema["Views"])
+  ? (PublicSchema["Tables"] & PublicSchema["Views"])[PublicTableNameOrOptions] extends {
+      Row: infer R;
+    }
+    ? R
+    : never
+  : never;
+
+export type TablesInsert<
+  PublicTableNameOrOptions extends keyof PublicSchema["Tables"] | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+    : never = never
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I;
+    }
+    ? I
+    : never
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+  ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+      Insert: infer I;
+    }
+    ? I
+    : never
+  : never;
+
+export type TablesUpdate<
+  PublicTableNameOrOptions extends keyof PublicSchema["Tables"] | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+    : never = never
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U;
+    }
+    ? U
+    : never
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+  ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+      Update: infer U;
+    }
+    ? U
+    : never
+  : never;
+
+export type Enums<
+  PublicEnumNameOrOptions extends keyof PublicSchema["Enums"] | { schema: keyof Database },
+  EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
+    : never = never
+> = PublicEnumNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
+  ? PublicSchema["Enums"][PublicEnumNameOrOptions]
+  : never;

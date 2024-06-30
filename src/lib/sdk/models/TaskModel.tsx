@@ -1,3 +1,5 @@
+import { Database } from "../constants/supabase-types";
+
 export type TaskInsert = Database["public"]["Tables"]["tasks"]["Insert"];
 export type TaskUpdate = Database["public"]["Tables"]["tasks"]["Update"];
 

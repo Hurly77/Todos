@@ -1,3 +1,4 @@
+import { Database } from "../constants/supabase-types";
 import { supabase } from "../utilities/supabase";
 
 type TaskRepeatCreate = Database["public"]["Tables"]["task_repeat"]["Insert"];

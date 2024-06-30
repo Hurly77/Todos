@@ -21,7 +21,7 @@ export default function DropdownsDueDateDropdown(props: TaskSpecificDropdownsPro
   const { placeholder, hasChip, setTask, task, datePickerOpen, setDatePickerOpen } = props;
   const { taskEditorOpen } = React.useContext(TasksLayoutContext);
 
-  function handleOnClick(option: (typeof DUE_DATE_DROPDOWN_OPTIONS)[0]) {
+  function handleOnClick(option: { key: string; name: string; value: Date | null }) {
     if (task) {
       setTask({
         ...task,
@@ -31,7 +31,7 @@ export default function DropdownsDueDateDropdown(props: TaskSpecificDropdownsPro
     if (taskEditorOpen && task) {
       updateTask({
         id: task.id,
-        date: option.value?.toISOString(),
+        date: option.value?.toISOString() ?? null,
       });
     }
   }
@@ -59,9 +59,20 @@ export default function DropdownsDueDateDropdown(props: TaskSpecificDropdownsPro
                 </DropdownItem>
               ))}
             </DropdownSection>
-            <DropdownSection>
+            <DropdownSection showDivider={!!task?.date}>
               <DropdownItem onClick={() => setDatePickerOpen("due_date")} key="Custom">
                 Custom
+              </DropdownItem>
+            </DropdownSection>
+            <DropdownSection className={task?.date ? "block" : "hidden"}>
+              <DropdownItem
+                color="danger"
+                variant="solid"
+                key="No Date"
+                className="text-danger font-medium"
+                onClick={() => handleOnClick({ key: "No Date", name: "No Date", value: null })}
+              >
+                No Date
               </DropdownItem>
             </DropdownSection>
           </DropdownMenu>

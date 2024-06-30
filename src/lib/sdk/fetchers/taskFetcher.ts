@@ -12,7 +12,7 @@ export async function taskFetcher(key: TaskFetcherKeys): Promise<PostgrestSingle
   const filterBuilder = supabase
     .from("tasks")
     .select(
-      "*, repeat:task_repeat!tasks_repeat_id_fkey(*), steps:task_steps(*), categories:task_tag!tasks_tag_id_fkey(*)"
+      "*, repeat:task_repeat!public_tasks_repeat_id_fkey(*), steps:task_steps(*), categories:task_tag!tasks_tag_id_fkey(*)"
     )
     .eq("user_id", userId);
 
@@ -21,7 +21,7 @@ export async function taskFetcher(key: TaskFetcherKeys): Promise<PostgrestSingle
   } else if (key === TaskFetcherKeys.IMPORTANT) {
     filterBuilder.filter("important", "eq", true);
   } else if (key === TaskFetcherKeys.PLANNED) {
-    filterBuilder.gte("date", endOfDay);
+    filterBuilder.filter("date", "not.is", null);
   }
 
   const response = await filterBuilder.order("created_at", { ascending: false });

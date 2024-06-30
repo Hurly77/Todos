@@ -21,13 +21,13 @@ export default function DropdownsReminderDropdown(props: TaskSpecificDropdownsPr
   const { placeholder, hasChip, setTask, task, datePickerOpen, setDatePickerOpen } = props;
   const { taskEditorOpen } = React.useContext(TasksLayoutContext);
 
-  function handleOnClick(option: (typeof REMINDER_DROPDOWN_OPTIONS)[0]) {
+  function handleOnClick(option: { key: string; name: string; value: Date | null }) {
     if (task) setTask({ ...task, reminder: option.value });
 
     if (taskEditorOpen && task) {
       updateTask({
         id: task.id,
-        reminder: option.value?.toISOString(),
+        reminder: option.value?.toISOString() ?? null,
       });
     }
   }
@@ -62,9 +62,21 @@ export default function DropdownsReminderDropdown(props: TaskSpecificDropdownsPr
                 </DropdownItem>
               ))}
             </DropdownSection>
-            <DropdownSection>
+            <DropdownSection showDivider={!!task?.reminder}>
               <DropdownItem onClick={() => setDatePickerOpen("reminder")} key="Custom">
                 Custom
+              </DropdownItem>
+            </DropdownSection>
+
+            <DropdownSection className={task?.reminder ? "block" : "hidden"}>
+              <DropdownItem
+                key="Remove"
+                color="danger"
+                variant="solid"
+                className="text-danger font-medium"
+                onClick={() => handleOnClick({ key: "remove", name: "remove", value: null })}
+              >
+                Remove Reminder
               </DropdownItem>
             </DropdownSection>
           </DropdownMenu>
