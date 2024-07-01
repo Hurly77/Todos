@@ -2,19 +2,29 @@ import { Button, Card, CardBody, CardFooter, CardHeader, Checkbox, Input, Link }
 import { AuthFormType } from "../constants/auth-text";
 import { getFormConstants } from "../helpers/auth-form-helpers";
 import { classNames } from "../../app/helpers/twind-helper";
-import { ChevronLeftIcon } from "@heroicons/react/24/outline";
+import { ChevronLeftIcon, EyeSlashIcon, ShieldCheckIcon, ShieldExclamationIcon } from "@heroicons/react/24/outline";
 import React from "react";
 import { supabase } from "@/lib/sdk/utilities/supabase";
 import { AuthError } from "@supabase/supabase-js";
+import { EyeIcon } from "@heroicons/react/24/outline";
 
 export default function LoginForm({ formType }: { formType: AuthFormType }) {
   const AUTH_TEXT = getFormConstants(formType);
   const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
   const [error, setError] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [confirmPassword, setConfirmPassword] = React.useState("");
+  const [showingPassword, setShowingPassword] = React.useState(false);
+  const [resetLinkSent, setResetLinkSent] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  const passwordsMatch = password === confirmPassword;
+  const displayPasswordError = !passwordsMatch && confirmPassword.length > 0 && password.length > 0;
 
   async function handleOnSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (formType === AuthFormType.SIGNUP && !passwordsMatch) return;
+    setIsLoading(true);
     try {
       const response =
         formType === AuthFormType.LOGIN
@@ -26,11 +36,17 @@ export default function LoginForm({ formType }: { formType: AuthFormType }) {
           : null;
       console.log("response ", response);
       if (response?.error) throw response.error;
+      if (formType === AuthFormType.FORGOT_PASSWORD) {
+        setResetLinkSent(true);
+        return;
+      }
     } catch (e) {
       const error = e as AuthError;
       console.log("ERROR_h ", error.message);
       setError(error.message);
       setTimeout(() => setError(""), 3000);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -55,37 +71,85 @@ export default function LoginForm({ formType }: { formType: AuthFormType }) {
               *{error}
             </span>
           )}
-          <div className="space-y-4">
-            <Input
-              autoComplete="email"
-              placeholder="john@doeknowme.com"
-              label="Email"
-              labelPlacement="outside"
-              radius="sm"
-              color="primary"
-              variant="bordered"
-              onValueChange={(value) => setEmail(value)}
-              classNames={{
-                label: "text-foreground-500",
-              }}
-            />
-            {formType !== AuthFormType.FORGOT_PASSWORD && (
+          {resetLinkSent && formType === AuthFormType.FORGOT_PASSWORD ? (
+            <p>A reset link has been sent to {email}.</p>
+          ) : (
+            <div className="space-y-4">
               <Input
-                autoComplete="current-password"
-                label="Password"
-                type="password"
+                autoComplete="email"
+                placeholder="john@doeknowme.com"
+                label="Email"
                 labelPlacement="outside"
-                placeholder="type password here"
                 radius="sm"
                 color="primary"
                 variant="bordered"
-                onValueChange={(value) => setPassword(value)}
+                onValueChange={setEmail}
                 classNames={{
                   label: "text-foreground-500",
                 }}
               />
-            )}
-          </div>
+              {formType !== AuthFormType.FORGOT_PASSWORD && (
+                <Input
+                  autoComplete="current-password"
+                  label="Password"
+                  type={showingPassword ? "text" : "password"}
+                  labelPlacement="outside"
+                  placeholder="type password here"
+                  radius="sm"
+                  color="primary"
+                  variant="bordered"
+                  onValueChange={setPassword}
+                  value={password}
+                  endContent={
+                    showingPassword ? (
+                      <EyeSlashIcon
+                        className="h-5 w-5 cursor-pointer"
+                        onClick={() => setShowingPassword(!showingPassword)}
+                      />
+                    ) : (
+                      <EyeIcon
+                        className="h-5 w-5 cursor-pointer"
+                        onClick={() => setShowingPassword(!showingPassword)}
+                      />
+                    )
+                  }
+                  classNames={{
+                    label: "text-foreground-500",
+                  }}
+                />
+              )}
+
+              {formType === AuthFormType.SIGNUP && (
+                <Input
+                  autoComplete="current-password"
+                  label="Password"
+                  type={showingPassword ? "text" : "password"}
+                  labelPlacement="outside"
+                  placeholder="type password here"
+                  radius="sm"
+                  color={displayPasswordError ? "danger" : "primary"}
+                  variant="bordered"
+                  onValueChange={setConfirmPassword}
+                  value={confirmPassword}
+                  isInvalid={displayPasswordError}
+                  errorMessage={displayPasswordError ? "Passwords do not match" : ""}
+                  classNames={{
+                    label: "text-foreground-500",
+                    inputWrapper: displayPasswordError ? "border-danger" : "",
+                  }}
+                  endContent={
+                    displayPasswordError ? (
+                      <ShieldExclamationIcon className={classNames("h-6 w-6 stroke-danger")} />
+                    ) : (
+                      <ShieldCheckIcon
+                        className={classNames("h-6 w-6", passwordsMatch ? "stroke-success" : "stroke-foreground")}
+                      />
+                    )
+                  }
+                />
+              )}
+            </div>
+          )}
         </CardBody>
         <CardFooter className="flex flex-col space-y-4 px-3 py-0 pb-4">
           <div className={classNames("flex w-full text-sm", formType !== AuthFormType.SIGNUP ? "justify-between" : "")}>
@@ -104,7 +168,13 @@ export default function LoginForm({ formType }: { formType: AuthFormType }) {
               </div>
             )}
           </div>
-          <Button type="submit" radius="sm" color="primary" className="w-full text-md font-medium">
+          <Button
+            isLoading={isLoading}
+            type="submit"
+            radius="sm"
+            color="primary"
+            className="w-full text-md font-medium"
+          >
             {AUTH_TEXT.BUTTON}
           </Button>
           <div className="text-foreground-600 text-sm">

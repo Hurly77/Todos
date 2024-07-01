@@ -15,7 +15,7 @@ import { TaskFormat } from "@/lib/sdk/models";
 
 export default function TaskTileForm({ type }: { type?: TaskFetcherKeys }) {
   const ctx = React.useContext(TasksLayoutContext);
-  const { mutate, taskList } = useTaskList(type ?? TaskFetcherKeys.ALL);
+  const { mutate, taskList } = ctx;
 
   const lastId = Math.max(...(taskList?.map((t) => t.id) ?? [0]));
 
@@ -44,24 +44,19 @@ export default function TaskTileForm({ type }: { type?: TaskFetcherKeys }) {
 
   async function handleSubmitTask(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    await taskCreator({ task: currentTask, type: type ?? TaskFetcherKeys.ALL });
+    const taskPayload = { task: currentTask, type: type ?? TaskFetcherKeys.ALL };
+    setCurrentTask({ id: "", title: "", date: null, reminder: null, repeat: null });
+
     const optimisticTask: TaskFormat = {
       ...currentTask,
       id: lastId + 1,
       ...getPlaceholderTask(type ?? TaskFetcherKeys.ALL),
     };
 
-    mutate((tasks) => [optimisticTask, ...(tasks ?? [])]);
+    mutate((prevTasks) => [optimisticTask, ...(prevTasks ?? [])], false);
+    await taskCreator(taskPayload);
 
     const { repeat, id, ...task } = currentTask;
-
-    setCurrentTask({
-      id: "",
-      title: "",
-      date: null,
-      reminder: null,
-      repeat: null,
-    });
   }
 
   return (

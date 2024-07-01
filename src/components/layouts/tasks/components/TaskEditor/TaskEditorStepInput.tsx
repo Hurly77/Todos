@@ -6,15 +6,20 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Checkbox, Input, InputProps } from "@nextui-org/react";
 import React from "react";
 import { TasksLayoutContext } from "../../context/TasksLayoutContext";
+import useTaskList from "../../hooks/useTaskList";
 
 type StepInputProps = {
   step: TaskStep;
 };
 export default function TaskEditorStepInput(props: StepInputProps) {
   const { step } = props;
-  const { taskInEdit, setTaskInEdit } = React.useContext(TasksLayoutContext);
+  const { taskInEdit, setTaskInEdit, listType } = React.useContext(TasksLayoutContext);
   const [value, setValue] = React.useState(step?.title ?? "");
   const [stepCompleted, setStepCompleted] = React.useState(step?.completed ?? false);
+
+  console.log(listType);
+
+  function onDelete() {}
 
   return (
     <div className="flex">

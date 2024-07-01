@@ -17,7 +17,7 @@ export default function TaskTile(props: {
   const { task, type, handleOnChange } = props;
 
   const ctx = React.useContext(TasksLayoutContext);
-  const { mutate } = useTaskList(type);
+  const { mutate } = ctx;
   const [isImportant, setIsImportant] = React.useState(task.important);
   const [isComplete, setIsComplete] = React.useState(task.completed);
 

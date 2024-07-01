@@ -3,10 +3,12 @@ import { Avatar, Button } from "@nextui-org/react";
 import React from "react";
 import { TasksLayoutContext } from "../../context/TasksLayoutContext";
 import NavigationDropdownMenu from "./NavigationDropdownMenu";
+import useSession from "@/app/hooks/useSession";
 
 export default function ToDosNavbar() {
   const ctx = React.useContext(TasksLayoutContext);
   const [open, setOpen] = ctx.sidebarState;
+  const session = useSession();
 
   return (
     <div className="z-40 h-16 bg-primary text-primary-foreground shadow-md flex items-center px-12 justify-between">
@@ -17,7 +19,7 @@ export default function ToDosNavbar() {
       <div className="flex items-center h-full space-x-5">
         <NavigationDropdownMenu />
         <span className="cursor-pointer">
-          <Avatar size="sm" name="CL" />
+          <Avatar size="sm" name={session?.user?.email?.slice(0, 2)?.toUpperCase()} />
         </span>
       </div>
     </div>
