@@ -8,6 +8,7 @@ import TaskTile from "./TaskTile";
 import { KeyedMutator } from "swr";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { classNames } from "@/components/layouts/app/helpers/twind-helper";
+import { TasksLayoutContext } from "../../context/TasksLayoutContext";
 
 type TaskListProps = {
   type: TaskFetcherKeys;
@@ -35,7 +36,7 @@ function TaskTileList({ type, tasks, mutate }: TaskListProps) {
 }
 
 export default function TaskTiles({ type }: { type: TaskFetcherKeys }) {
-  const { taskList, mutate } = useTaskList(type);
+  const { taskList, mutate } = React.useContext(TasksLayoutContext);
   const [showCompleted, setShowCompleted] = React.useState(true);
 
   const incompleteTasks = taskList?.filter((task) => !task.completed);

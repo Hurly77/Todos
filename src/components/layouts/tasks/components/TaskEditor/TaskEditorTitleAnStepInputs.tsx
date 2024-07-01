@@ -21,12 +21,28 @@ export default function TaskTitleAnStepInputs() {
     }
   }
 
+  async function onAddStep() {
+    if (!nextStep?.title) return;
+    if (nextStep?.task_id) {
+      setNextStep({ ...nextStep, title: "" });
+      const { data: step } = await createTaskStep(nextStep?.task_id, nextStep.title);
+      if (step && taskInEdit) {
+        setTaskInEdit({
+          ...taskInEdit,
+          steps: [...(taskInEdit?.steps || []), step],
+        });
+      }
+    }
+  }
+
   if (!taskInEdit) return <></>;
 
   return (
     <div className="p-4 w-full dark:bg-default-100 bg-white space-y-1 rounded-sm">
       <div className="flex sticky top-0 dark:bg-default-100 bg-white z-10">
         <Checkbox
+          size="lg"
+          radius="full"
           defaultSelected={taskInEdit?.completed}
           onValueChange={(isCompleted) =>
             updateTask({
@@ -78,22 +94,9 @@ export default function TaskTitleAnStepInputs() {
             placeholder={taskInEdit?.steps?.length === 0 ? "add step" : "next step"}
             value={nextStep?.title}
             onValueChange={(value) => setNextStep({ task_id: taskInEdit?.id, title: value })}
+            onKeyDown={(e) => e.key === "Enter" && onAddStep()}
             endContent={
-              <p
-                onClick={async () => {
-                  if (nextStep?.task_id) {
-                    setNextStep({ ...nextStep, title: "" });
-                    const { data: step } = await createTaskStep(nextStep?.task_id, nextStep.title);
-                    if (step && taskInEdit) {
-                      setTaskInEdit({
-                        ...taskInEdit,
-                        steps: [...(taskInEdit?.steps || []), step],
-                      });
-                    }
-                  }
-                }}
-                className="text-sm text-primary-400 cursor-pointer"
-              >
+              <p onClick={onAddStep} className="text-sm text-primary-400 cursor-pointer">
                 Add
               </p>
             }

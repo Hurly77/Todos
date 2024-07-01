@@ -3,10 +3,26 @@ import { TasksLayoutContext } from "../../context/TasksLayoutContext";
 import React from "react";
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/react";
 import deleteTask from "@/lib/sdk/methods/delete-task";
+import useTaskList from "../../hooks/useTaskList";
 
 export default function TaskEditorBottomMenu() {
-  const { taskInEdit, closeTaskEditor } = React.useContext(TasksLayoutContext);
+  const { taskInEdit, closeTaskEditor, listType, mutate } = React.useContext(TasksLayoutContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isDeleting, setIsDeleting] = React.useState(false);
+
+  async function onRemoveTask() {
+    setIsDeleting(true);
+    try {
+      if (taskInEdit?.id) await deleteTask(taskInEdit?.id);
+      mutate((tasks) => tasks?.filter((task) => task.id !== taskInEdit?.id));
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsDeleting(false);
+      onClose();
+      closeTaskEditor();
+    }
+  }
 
   return (
     <>
@@ -27,15 +43,7 @@ export default function TaskEditorBottomMenu() {
             <Button onClick={onClose} radius="sm">
               Cancel
             </Button>{" "}
-            <Button
-              onClick={() => {
-                if (taskInEdit?.id) deleteTask(taskInEdit?.id);
-                onClose();
-                closeTaskEditor();
-              }}
-              radius="sm"
-              color="danger"
-            >
+            <Button isLoading={isDeleting} onClick={onRemoveTask} radius="sm" color="danger">
               Delete
             </Button>
           </ModalFooter>

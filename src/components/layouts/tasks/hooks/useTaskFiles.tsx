@@ -11,7 +11,10 @@ const fetcher = async (taskId: number) => {
 };
 
 export function useTaskFiles(taskId: number) {
-  const { data, error, isLoading, mutate } = useSWR(`task_files_${taskId}`, () => fetcher(taskId));
+  const { data, error, isLoading, mutate } = useSWR(`task_files_${taskId}`, () => fetcher(taskId), {
+    revalidateOnFocus: false,
+    keepPreviousData: true,
+  });
 
   return { files: data ? data : [], error, isLoading, mutate };
 }
