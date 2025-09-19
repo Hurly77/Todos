@@ -6,6 +6,8 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { classNames } from "@/app/helpers/twind-helper";
 import { useMediaQuery, useSizes, useIsSmall } from "@/app/hooks/useMediaQuery";
+import { Button } from "@nextui-org/react";
+import { toast } from "sonner";
 
 export default function Sidebar() {
   const router = useRouter();
@@ -17,6 +19,8 @@ export default function Sidebar() {
     if (!isSmall) setOpen(true);
   });
   const pathname = router.pathname;
+
+  const toastTypes = ["info", "success", "error", "warning", "loading", "default"] as const;
 
   return (
     <AnimatePresence>
@@ -55,6 +59,31 @@ export default function Sidebar() {
                 </div>
               </Link>
             ))}
+
+            <div className="p-4 border-t mt-4 flex flex-col space-y-2">
+              {toastTypes.map((type) => (
+                <Button
+                  key={type}
+                  color={
+                    type === "error" ? "danger" : type === "info" ? "secondary" : type === "loading" ? "default" : type
+                  }
+                  onPress={() => {
+                    const toastProps = { duration: 3000, closeButton: true };
+
+                    if (type === "default") {
+                      toast(`I'm ${type} Toast`, { duration: 3000, closeButton: true });
+                    } else if (type === "loading") {
+                      const id = toast.loading("I'm a loading Toast", toastProps);
+                      setTimeout(() => {
+                        toast.success("I'm a success Toast", { id, ...toastProps });
+                      }, 2000);
+                    } else toast[type](`I'm a ${type} Toast`, { duration: 3000, closeButton: true });
+                  }}
+                >
+                  Show {type} toast
+                </Button>
+              ))}
+            </div>
           </div>
         </motion.div>
       )}

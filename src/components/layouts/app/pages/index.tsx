@@ -21,7 +21,18 @@ export default function AppHomePage() {
           <p className="text-gray-500">A simple todo app with Next.js, Tailwind CSS and NextUI</p>
         </div>
         <div className="flex justify-end">
-          <Button variant="ghost" radius="sm" color="primary" onClick={() => router.push("/tasks")}>
+          <Button
+            variant="ghost"
+            radius="sm"
+            color="primary"
+            onClick={() =>
+              router.push(
+                `/auth/login?demo=${encodeURIComponent(
+                  JSON.stringify({ email: "demo@user.com", password: "Pa$$1234" })
+                )}`
+              )
+            }
+          >
             Get Started
           </Button>
         </div>

@@ -7,9 +7,23 @@ import React from "react";
 import { supabase } from "@/lib/sdk/utilities/supabase";
 import { AuthError } from "@supabase/supabase-js";
 import { EyeIcon } from "@heroicons/react/24/outline";
+import { useRouter } from "next/router";
+import { toast } from "sonner";
+
+const getDemoUser = (demo: string) => {
+  try {
+    const { email, password } = JSON.parse(demo) as { email: string; password: string };
+    console.log("Demo user: ", { email, password });
+    return { email, password };
+  } catch (e) {
+    console.error("Error parsing demo user: ", e);
+    toast.error("Could not parse demo user", { duration: 2500 });
+  }
+};
 
 export default function LoginForm({ formType }: { formType: AuthFormType }) {
   const AUTH_TEXT = getFormConstants(formType);
+  const router = useRouter();
   const [email, setEmail] = React.useState("");
   const [error, setError] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -50,6 +64,16 @@ export default function LoginForm({ formType }: { formType: AuthFormType }) {
     }
   }
 
+  React.useEffect(() => {
+    if (router.query.demo) {
+      const demoUser = getDemoUser(router.query.demo as string);
+      if (demoUser) {
+        setEmail(demoUser.email);
+        setPassword(demoUser.password);
+      }
+    }
+  }, [router.query.demo]);
+
   return (
     <form
       onSubmit={handleOnSubmit}
@@ -84,6 +108,7 @@ export default function LoginForm({ formType }: { formType: AuthFormType }) {
                 color="primary"
                 variant="bordered"
                 onValueChange={setEmail}
+                value={email}
                 classNames={{
                   label: "text-foreground-500",
                 }}

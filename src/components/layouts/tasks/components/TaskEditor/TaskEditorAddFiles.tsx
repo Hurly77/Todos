@@ -7,6 +7,8 @@ import { Divider, Link } from "@nextui-org/react";
 import { useTaskFiles } from "../../hooks/useTaskFiles";
 import { getFileType, getElementType } from "../../helpers/file";
 
+import { toast } from "sonner";
+
 export default function TaskEditorAddFiles() {
   const ctx = React.useContext(TasksLayoutContext);
   const { files, mutate } = useTaskFiles(ctx.taskInEdit?.id ?? 0);
@@ -18,7 +20,11 @@ export default function TaskEditorAddFiles() {
 
     const { error } = await supabase.storage.from("task_files").upload(`${task.id}/${file.name}`, file);
 
-    if (error) return console.error("Error uploading file: ", error);
+    if (error) {
+      console.error("Error uploading file: ", error);
+      toast.error("Error uploading file");
+      return;
+    }
     await mutate();
   }
 

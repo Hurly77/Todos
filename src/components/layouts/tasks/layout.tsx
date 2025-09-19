@@ -12,10 +12,11 @@ type ToDosLayoutProps = {
 
 export default function TaskLayout({ children }: ToDosLayoutProps) {
   const session = useSession();
-  if (!session)
+  console.log("Session in TaskLayout:", session);
+  if (!session?.user)
     return (
-      <div>
-        <Spinner size="lg" />
+      <div className="w-full h-full grow border-primary border-2 flex items-center justify-center">
+        <Spinner label="Authenticating User" size="lg" />
       </div>
     );
   return (
