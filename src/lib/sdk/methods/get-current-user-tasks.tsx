@@ -3,7 +3,6 @@ import { taskFetcher } from "../fetchers/taskFetcher";
 import { TaskFormat } from "../models";
 
 export default async function getCurrentUserTasks(key: TaskFetcherKeys): Promise<TaskFormat[]> {
-  console.log("Getting Tasks");
   const { data, error } = await taskFetcher(key);
   if (error) throw error;
 

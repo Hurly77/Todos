@@ -17,8 +17,6 @@ export default function TaskEditorStepInput(props: StepInputProps) {
   const [value, setValue] = React.useState(step?.title ?? "");
   const [stepCompleted, setStepCompleted] = React.useState(step?.completed ?? false);
 
-  console.log(listType);
-
   function onDelete() {}
 
   return (

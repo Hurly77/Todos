@@ -59,31 +59,6 @@ export default function Sidebar() {
                 </div>
               </Link>
             ))}
-
-            <div className="p-4 border-t mt-4 flex flex-col space-y-2">
-              {toastTypes.map((type) => (
-                <Button
-                  key={type}
-                  color={
-                    type === "error" ? "danger" : type === "info" ? "secondary" : type === "loading" ? "default" : type
-                  }
-                  onPress={() => {
-                    const toastProps = { duration: 3000, closeButton: true };
-
-                    if (type === "default") {
-                      toast(`I'm ${type} Toast`, { duration: 3000, closeButton: true });
-                    } else if (type === "loading") {
-                      const id = toast.loading("I'm a loading Toast", toastProps);
-                      setTimeout(() => {
-                        toast.success("I'm a success Toast", { id, ...toastProps });
-                      }, 2000);
-                    } else toast[type](`I'm a ${type} Toast`, { duration: 3000, closeButton: true });
-                  }}
-                >
-                  Show {type} toast
-                </Button>
-              ))}
-            </div>
           </div>
         </motion.div>
       )}

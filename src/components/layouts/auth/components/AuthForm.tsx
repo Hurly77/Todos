@@ -13,7 +13,6 @@ import { toast } from "sonner";
 const getDemoUser = (demo: string) => {
   try {
     const { email, password } = JSON.parse(demo) as { email: string; password: string };
-    console.log("Demo user: ", { email, password });
     return { email, password };
   } catch (e) {
     console.error("Error parsing demo user: ", e);
@@ -48,7 +47,7 @@ export default function LoginForm({ formType }: { formType: AuthFormType }) {
           : formType === AuthFormType.FORGOT_PASSWORD
           ? await supabase.auth.resetPasswordForEmail(email)
           : null;
-      console.log("response ", response);
+
       if (response?.error) throw response.error;
       if (formType === AuthFormType.FORGOT_PASSWORD) {
         setResetLinkSent(true);
@@ -103,6 +102,7 @@ export default function LoginForm({ formType }: { formType: AuthFormType }) {
                 autoComplete="email"
                 placeholder="john@doeknowme.com"
                 label="Email"
+                aria-label="Email"
                 labelPlacement="outside"
                 radius="sm"
                 color="primary"

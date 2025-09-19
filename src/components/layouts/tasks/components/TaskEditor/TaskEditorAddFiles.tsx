@@ -31,7 +31,6 @@ export default function TaskEditorAddFiles() {
   async function onDeleteFile(file: FileObject) {
     const filePath = `${ctx.taskInEdit?.id}/${file.name}`;
     const { data, error } = await supabase.storage.from("task_files").remove([filePath]);
-    console.log(data, error);
 
     if (error) return console.error("Error deleting file: ", error);
 

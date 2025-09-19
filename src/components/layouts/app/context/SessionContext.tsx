@@ -17,11 +17,10 @@ export default function SessionContextProvider({ children }: { children: React.R
     supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
 
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("event", event);
       if (event === "SIGNED_OUT" && !router.pathname.includes("/auth")) router.push("/auth/login");
       if (["SIGNED_IN", "INITIAL_SESSION"].includes(event) && session && !router.pathname.includes("/tasks")) {
         setSession(session);
-        console.log("session ", session);
+
         router.push("/tasks");
       }
       if (!session && router.pathname.includes("/tasks")) router.push("/auth/login");

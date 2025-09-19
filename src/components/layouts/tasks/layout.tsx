@@ -12,7 +12,6 @@ type ToDosLayoutProps = {
 
 export default function TaskLayout({ children }: ToDosLayoutProps) {
   const session = useSession();
-  console.log("Session in TaskLayout:", session);
   if (!session?.user)
     return (
       <div className="w-full h-full grow border-primary border-2 flex items-center justify-center">
